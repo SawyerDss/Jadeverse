@@ -23,6 +23,7 @@
   --input: 160 10% 20%;
   --ring: 158 64% 52%;
   --radius: 0.75rem;
+  --jade: 158, 64%, 52%;
 }
 
 /* Theme colors */
@@ -68,6 +69,7 @@
 
 /* Rainbow theme with animation */
 [data-theme="rainbow"] {
+  --rainbow-animation-duration: 10s;
   --primary: 0 84% 60%;
   --secondary: 270 84% 60%;
   --accent: 180 84% 60%;
@@ -75,7 +77,11 @@
   --input: 60 94% 20%;
   --ring: 300 84% 60%;
   --muted: 240 10% 10%;
-  animation: rainbow-hue 10s linear infinite;
+}
+
+/* Apply rainbow animation to all elements with rainbow theme */
+[data-theme="rainbow"] *:not(.no-rainbow) {
+  animation: rainbow-hue var(--rainbow-animation-duration) linear infinite;
 }
 
 @keyframes rainbow-hue {
@@ -201,7 +207,7 @@ body {
 
 [data-theme="rainbow"] .mouse-trail {
   background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
-  animation: rainbow-rotate 2s linear infinite;
+  animation: rainbow-rotate var(--rainbow-animation-duration) linear infinite;
 }
 
 @keyframes rainbow-rotate {
@@ -282,7 +288,7 @@ body {
   background-clip: text;
   color: transparent;
   filter: drop-shadow(0 0 8px rgba(255, 0, 255, 0.5));
-  animation: rainbow-text-shift 2s linear infinite;
+  animation: rainbow-text-shift var(--rainbow-animation-duration) linear infinite;
 }
 
 @keyframes rainbow-text-shift {
@@ -325,27 +331,48 @@ body {
   animation: shine 1.5s ease-in-out infinite;
 }
 
-/* Text shadow for all headings */
+/* Enhanced text shadow for all headings */
 h1,
 h2,
 h3,
 h4,
 h5,
 h6 {
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2);
 }
 
 .text-shadow {
-  text-shadow: 0 0 8px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5), 0 0 20px rgba(255, 255, 255, 0.3), 0 0 30px rgba(255, 255, 255, 0.2);
 }
 
-/* Bloom effect for text */
+/* Enhanced Bloom effect for text */
 .text-bloom {
-  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7), 0 0 10px rgba(255, 255, 255, 0.5), 0 0 15px rgba(255, 255, 255, 0.3);
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.8), 0 0 20px rgba(255, 255, 255, 0.6), 0 0 30px rgba(255, 255, 255, 0.4),
+    0 0 40px rgba(255, 255, 255, 0.2);
 }
 
 .text-bloom-primary {
-  text-shadow: 0 0 5px hsla(var(--primary), 0.7), 0 0 10px hsla(var(--primary), 0.5), 0 0 15px hsla(var(--primary), 0.3);
+  text-shadow: 0 0 10px hsla(var(--primary), 0.8), 0 0 20px hsla(var(--primary), 0.6), 0 0 30px
+    hsla(var(--primary), 0.4), 0 0 40px hsla(var(--primary), 0.2);
+}
+
+/* Jade neon text effect */
+.jade-neon-text {
+  color: hsl(var(--jade));
+  text-shadow: 0 0 10px hsla(var(--jade), 0.8), 0 0 20px hsla(var(--jade), 0.6), 0 0 30px hsla(var(--jade), 0.4), 0 0
+    40px hsla(var(--jade), 0.2), 0 0 70px hsla(var(--jade), 0.1);
+  animation: jade-pulse 3s ease-in-out infinite alternate;
+}
+
+@keyframes jade-pulse {
+  0% {
+    text-shadow: 0 0 10px hsla(var(--jade), 0.8), 0 0 20px hsla(var(--jade), 0.6), 0 0 30px hsla(var(--jade), 0.4), 0 0
+      40px hsla(var(--jade), 0.2);
+  }
+  100% {
+    text-shadow: 0 0 15px hsla(var(--jade), 0.9), 0 0 30px hsla(var(--jade), 0.7), 0 0 45px hsla(var(--jade), 0.5), 0 0
+      60px hsla(var(--jade), 0.3);
+  }
 }
 
 /* Fix for transparent menus */
@@ -417,7 +444,7 @@ h6 {
 /* Rainbow button gradient */
 [data-theme="rainbow"] .rainbow-btn {
   background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
-  animation: rainbow-rotate 2s linear infinite;
+  animation: rainbow-rotate var(--rainbow-animation-duration) linear infinite;
 }
 
 /* Snow effect */
@@ -515,4 +542,38 @@ h6 {
   color: rgb(16, 185, 129);
   padding: 0.1rem 0.4rem;
   border-radius: 9999px;
+}
+
+/* Animations for rainbow elements */
+[data-theme="rainbow"] .animate-pulse,
+[data-theme="rainbow"] .animate-pulse-slow,
+[data-theme="rainbow"] .animate-float,
+[data-theme="rainbow"] .animate-spin-slow,
+[data-theme="rainbow"] .animate-glow,
+[data-theme="rainbow"] .animate-wave,
+[data-theme="rainbow"] .animate-shine {
+  animation-duration: var(--rainbow-animation-duration);
+}
+
+/* Mega title for homepage */
+.mega-title {
+  font-size: clamp(4rem, 15vw, 12rem);
+  font-weight: 900;
+  letter-spacing: -0.05em;
+  line-height: 0.9;
+  margin-bottom: 2rem;
+  text-align: center;
+  position: relative;
+}
+
+.mega-title::after {
+  content: "";
+  position: absolute;
+  bottom: -20px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 60%;
+  height: 4px;
+  background: linear-gradient(90deg, rgba(0, 0, 0, 0), hsla(var(--jade), 0.7), rgba(0, 0, 0, 0));
+  border-radius: 2px;
 }

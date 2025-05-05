@@ -1,0 +1,70 @@
+/* Neon Theme Styles */
+[data-theme="neon"] {
+  --primary: 120, 100%, 50%; /* Bright neon green */
+  --primary-foreground: 0, 0%, 0%;
+  --secondary: 300, 100%, 50%; /* Neon pink */
+  --secondary-foreground: 0, 0%, 0%;
+  --accent: 270, 100%, 60%; /* Neon purple */
+  --accent-foreground: 0, 0%, 100%;
+  --background: 0, 0%, 0%; /* Pure black */
+  --foreground: 0, 0%, 100%;
+  --card: 0, 0%, 4%;
+  --card-foreground: 0, 0%, 100%;
+  --popover: 0, 0%, 4%;
+  --popover-foreground: 0, 0%, 100%;
+  --border: 120, 100%, 50%;
+  --input: 120, 100%, 50%;
+  --ring: 120, 100%, 50%;
+}
+
+/* Neon text effect */
+[data-theme="neon"] .text-primary {
+  text-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary)), 0 0 15px hsl(var(--primary));
+}
+
+/* Neon button glow */
+[data-theme="neon"] button,
+[data-theme="neon"] .btn {
+  box-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary));
+  transition: all 0.3s ease;
+}
+
+[data-theme="neon"] button:hover,
+[data-theme="neon"] .btn:hover {
+  box-shadow: 0 0 10px hsl(var(--primary)), 0 0 20px hsl(var(--primary)), 0 0 30px hsl(var(--primary));
+}
+
+/* Neon borders */
+[data-theme="neon"] .border-primary {
+  box-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary));
+}
+
+/* Neon inputs */
+[data-theme="neon"] input:focus,
+[data-theme="neon"] textarea:focus,
+[data-theme="neon"] select:focus {
+  box-shadow: 0 0 5px hsl(var(--primary)), 0 0 10px hsl(var(--primary));
+  border-color: hsl(var(--primary));
+}
+
+/* Neon cards */
+[data-theme="neon"] .card {
+  box-shadow: 0 0 10px rgba(0, 255, 0, 0.3);
+  border: 1px solid rgba(0, 255, 0, 0.2);
+}
+
+/* Neon scrollbar */
+[data-theme="neon"] ::-webkit-scrollbar-thumb {
+  background: hsl(var(--primary));
+  box-shadow: 0 0 5px hsl(var(--primary));
+}
+
+/* Neon links */
+[data-theme="neon"] a {
+  text-shadow: 0 0 5px hsl(var(--primary));
+  transition: all 0.3s ease;
+}
+
+[data-theme="neon"] a:hover {
+  text-shadow: 0 0 10px hsl(var(--primary)), 0 0 15px hsl(var(--primary));
+}

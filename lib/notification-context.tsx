@@ -108,3 +108,5 @@ export function useNotification() {
   }
   return context
 }
+
+export { NotificationContext }

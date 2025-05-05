@@ -13,7 +13,6 @@ import {
   Users,
   Info,
   BotIcon as Robot,
-  Globe,
   AppWindow,
   Lightbulb,
 } from "lucide-react"
@@ -47,7 +46,6 @@ export default function Sidebar() {
     { href: "/", icon: Rocket, label: "Home", category: "main" },
     { href: "/games", icon: Gamepad2, label: "Games", category: "main" },
     { href: "/apps", icon: AppWindow, label: "Apps", category: "main" },
-    { href: "/proxy", icon: Globe, label: "Proxy", category: "main" },
     { href: "/about", icon: Info, label: "About", category: "main" },
     { href: "/jade-ai", icon: Robot, label: "JadeAI", category: "main" },
     { href: "/suggestions", icon: Lightbulb, label: "Suggestions", category: "main" },

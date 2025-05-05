@@ -3,8 +3,9 @@
 import type React from "react"
 
 import "./globals.css"
+import "./neon-theme.css" // Add this import for neon theme support
 import { Inter } from "next/font/google"
-import { ThemeProvider } from "@/components/theme-provider"
+import { ThemeProvider } from "@/lib/theme-context"
 import Sidebar from "@/components/sidebar"
 import AnimatedBackground from "@/components/animated-background"
 import FloatingHexagons from "@/components/floating-hexagons"

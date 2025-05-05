@@ -1,22 +1,24 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Settings, Moon, Sun, Eye, EyeOff, Bell, MousePointer, Sparkles } from "lucide-react"
+import { Settings, Moon, Sun, Eye, EyeOff, Bell, MousePointer, Sparkles, Palette } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useAuth } from "@/lib/auth-context"
 import { useNotification } from "@/lib/notification-context"
 import GlowingButton from "@/components/glowing-button"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRouter } from "next/navigation"
+import { ThemeCustomizer } from "./theme-customizer"
+import { useTheme } from "@/lib/theme-context"
 
 export default function SettingsPage() {
   const { user } = useAuth()
   const { addNotification, clearNotifications } = useNotification()
   const router = useRouter()
+  const { theme, setTheme } = useTheme()
 
   const [settings, setSettings] = useState({
     darkMode: true,
@@ -29,7 +31,6 @@ export default function SettingsPage() {
     buttonEffects: true,
     snowEffect: false,
     matrixEffect: false,
-    theme: "jade", // Default theme
     tabTitle: document.title,
     tabIcon: "/favicon.ico",
   })
@@ -39,9 +40,6 @@ export default function SettingsPage() {
     const savedSettings = localStorage.getItem("user-settings")
     if (savedSettings) {
       setSettings(JSON.parse(savedSettings))
-
-      // Apply theme from settings
-      document.documentElement.setAttribute("data-theme", JSON.parse(savedSettings).theme || "jade")
 
       // Apply animations setting
       if (JSON.parse(savedSettings).reducedMotion) {
@@ -65,11 +63,6 @@ export default function SettingsPage() {
     setSettings(newSettings)
     localStorage.setItem("user-settings", JSON.stringify(newSettings))
 
-    // Apply theme changes immediately
-    if (key === "theme") {
-      document.documentElement.setAttribute("data-theme", value)
-    }
-
     // Apply animation settings immediately
     if (key === "reducedMotion") {
       if (value) {
@@ -86,6 +79,16 @@ export default function SettingsPage() {
       } else {
         document.documentElement.classList.remove("high-contrast")
       }
+    }
+
+    // Apply mouse trail setting
+    if (key === "mouseTrail") {
+      localStorage.setItem("mouseTrail", String(value))
+    }
+
+    // Apply button effects setting
+    if (key === "buttonEffects") {
+      localStorage.setItem("buttonEffects", String(value))
     }
 
     // Show notification
@@ -148,87 +151,22 @@ export default function SettingsPage() {
           </TabsList>
 
           <TabsContent value="appearance" className="space-y-6">
+            {/* Theme Customizer */}
+            <div className="mb-6">
+              <div className="flex items-center mb-4">
+                <Palette className="h-6 w-6 text-primary mr-2" />
+                <h2 className="text-2xl font-bold text-white">Theme Customization</h2>
+              </div>
+
+              <ThemeCustomizer currentTheme={theme} onThemeChange={setTheme} />
+            </div>
+
             <Card className="glass border-primary/20">
               <CardHeader>
-                <CardTitle className="text-xl text-white">Theme</CardTitle>
+                <CardTitle className="text-xl text-white">Display Settings</CardTitle>
                 <CardDescription>Customize the look of JadeVerse</CardDescription>
               </CardHeader>
               <CardContent className="space-y-6">
-                <div>
-                  <Label className="mb-3 block">Color Theme</Label>
-                  <RadioGroup
-                    value={settings.theme}
-                    onValueChange={(value) => updateSetting("theme", value)}
-                    className="grid grid-cols-3 sm:grid-cols-6 gap-2"
-                  >
-                    <div>
-                      <RadioGroupItem value="jade" id="jade" className="sr-only peer" />
-                      <Label
-                        htmlFor="jade"
-                        className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                      >
-                        <span className="w-8 h-8 rounded-full bg-[#10b981] mb-2"></span>
-                        <span>Jade</span>
-                      </Label>
-                    </div>
-
-                    <div>
-                      <RadioGroupItem value="blue" id="blue" className="sr-only peer" />
-                      <Label
-                        htmlFor="blue"
-                        className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                      >
-                        <span className="w-8 h-8 rounded-full bg-[#3b82f6] mb-2"></span>
-                        <span>Blue</span>
-                      </Label>
-                    </div>
-
-                    <div>
-                      <RadioGroupItem value="purple" id="purple" className="sr-only peer" />
-                      <Label
-                        htmlFor="purple"
-                        className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                      >
-                        <span className="w-8 h-8 rounded-full bg-[#8b5cf6] mb-2"></span>
-                        <span>Purple</span>
-                      </Label>
-                    </div>
-
-                    <div>
-                      <RadioGroupItem value="red" id="red" className="sr-only peer" />
-                      <Label
-                        htmlFor="red"
-                        className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                      >
-                        <span className="w-8 h-8 rounded-full bg-[#ef4444] mb-2"></span>
-                        <span>Red</span>
-                      </Label>
-                    </div>
-
-                    <div>
-                      <RadioGroupItem value="orange" id="orange" className="sr-only peer" />
-                      <Label
-                        htmlFor="orange"
-                        className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                      >
-                        <span className="w-8 h-8 rounded-full bg-[#f97316] mb-2"></span>
-                        <span>Orange</span>
-                      </Label>
-                    </div>
-
-                    <div>
-                      <RadioGroupItem value="rainbow" id="rainbow" className="sr-only peer" />
-                      <Label
-                        htmlFor="rainbow"
-                        className="flex flex-col items-center justify-center rounded-md border-2 border-muted bg-popover p-4 hover:bg-accent hover:text-accent-foreground peer-data-[state=checked]:border-primary [&:has([data-state=checked])]:border-primary"
-                      >
-                        <span className="w-8 h-8 rounded-full bg-gradient-to-r from-red-500 via-yellow-500 via-green-500 via-blue-500 to-purple-500 mb-2"></span>
-                        <span>Rainbow</span>
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-2">
                     <Moon className="h-5 w-5 text-primary" />
