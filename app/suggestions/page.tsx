@@ -8,7 +8,8 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Lightbulb, Send, Check } from "lucide-react"
+// Update imports to include Discord icon
+import { Lightbulb, Send, Check, MessageSquare } from "lucide-react"
 import GlowingButton from "@/components/glowing-button"
 import { useAuth } from "@/lib/auth-context"
 import { useNotification } from "@/lib/notification-context"
@@ -145,6 +146,19 @@ export default function SuggestionsPage() {
                 <GlowingButton className="w-full" type="submit">
                   <Send className="mr-2 h-4 w-4" />
                   Submit Suggestion
+                </GlowingButton>
+
+                <div className="mt-4 text-center">
+                  <span className="text-white/70">or</span>
+                </div>
+
+                <GlowingButton
+                  className="w-full mt-4"
+                  variant="outline"
+                  onClick={() => window.open("https://discord.gg/RDfcq2YMhg", "_blank")}
+                >
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Join Our Discord
                 </GlowingButton>
               </form>
             )}

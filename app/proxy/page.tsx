@@ -14,45 +14,51 @@ export default function ProxyPage() {
   const [url, setUrl] = useState("")
   const [loading, setLoading] = useState(false)
   const iframeRef = useRef<HTMLIFrameElement>(null)
-  const [uvLoaded, setUvLoaded] = useState(false)
+  const [proxyLoaded, setProxyLoaded] = useState(false)
 
-  // Load Ultraviolet scripts
+  // Load Interstellar scripts
   useEffect(() => {
-    const loadUltraviolet = async () => {
+    const loadInterstellar = async () => {
       try {
-        // Create script elements for Ultraviolet
-        const uvScript = document.createElement("script")
-        uvScript.src = "https://cdn.jsdelivr.net/gh/titaniumnetwork-dev/Ultraviolet/dist/uv.bundle.js"
+        // Create script elements for Interstellar
+        const interstellarScript = document.createElement("script")
+        interstellarScript.src = "https://cdn.jsdelivr.net/gh/UseInterstellar/Interstellar/static/uv/uv.bundle.js"
 
         const configScript = document.createElement("script")
-        configScript.src = "https://cdn.jsdelivr.net/gh/titaniumnetwork-dev/Ultraviolet/dist/uv.config.js"
+        configScript.src = "https://cdn.jsdelivr.net/gh/UseInterstellar/Interstellar/static/uv/uv.config.js"
+
+        const handlerScript = document.createElement("script")
+        handlerScript.src = "https://cdn.jsdelivr.net/gh/UseInterstellar/Interstellar/static/index.js"
 
         // Append scripts to document
-        document.body.appendChild(uvScript)
+        document.body.appendChild(interstellarScript)
         document.body.appendChild(configScript)
+        document.body.appendChild(handlerScript)
 
         // Wait for scripts to load
-        uvScript.onload = () => {
+        interstellarScript.onload = () => {
           configScript.onload = () => {
-            setUvLoaded(true)
-            addNotification({
-              title: "Ultraviolet Loaded",
-              message: "TitaniumNetwork's Ultraviolet proxy is ready to use",
-              type: "success",
-            })
+            handlerScript.onload = () => {
+              setProxyLoaded(true)
+              addNotification({
+                title: "Interstellar Loaded",
+                message: "Interstellar proxy is ready to use",
+                type: "success",
+              })
+            }
           }
         }
       } catch (error) {
-        console.error("Failed to load Ultraviolet:", error)
+        console.error("Failed to load Interstellar:", error)
         addNotification({
           title: "Proxy Error",
-          message: "Failed to load Ultraviolet proxy. Please try again later.",
+          message: "Failed to load Interstellar proxy. Please try again later.",
           type: "error",
         })
       }
     }
 
-    loadUltraviolet()
+    loadInterstellar()
   }, [addNotification])
 
   const handleNavigate = (e: React.FormEvent) => {
@@ -77,8 +83,8 @@ export default function ProxyPage() {
     }
 
     try {
-      // Use Ultraviolet to proxy the URL
-      if (window.__uv && uvLoaded) {
+      // Use Interstellar to proxy the URL
+      if (window.__uv && proxyLoaded) {
         const encodedUrl = window.__uv.codec.encode(navigateUrl)
         const fullUrl = window.__uv.prefix + encodedUrl
 
@@ -86,14 +92,14 @@ export default function ProxyPage() {
           iframeRef.current.src = fullUrl
         }
       } else {
-        // Fallback if Ultraviolet is not loaded
+        // Fallback if Interstellar is not loaded
         if (iframeRef.current) {
           iframeRef.current.src = navigateUrl
         }
 
         addNotification({
           title: "Proxy Warning",
-          message: "Ultraviolet not fully loaded. Using direct navigation which may not work for all sites.",
+          message: "Interstellar not fully loaded. Using direct navigation which may not work for all sites.",
           type: "warning",
         })
       }
@@ -145,17 +151,17 @@ export default function ProxyPage() {
         <div className="flex items-center mb-6">
           <Globe className="h-8 w-8 text-primary mr-3 text-bloom-primary" />
           <h1 className="text-3xl md:text-5xl font-bold text-white text-bloom">
-            <span className="text-gradient">Ultraviolet Web Proxy</span>
+            <span className="text-gradient">Interstellar Web Proxy</span>
           </h1>
         </div>
 
-        {/* Info message about TitaniumNetwork */}
+        {/* Info message about Interstellar */}
         <div className="mb-6 p-4 bg-primary/10 border border-primary/30 rounded-lg flex items-start">
           <div>
-            <h3 className="font-medium text-white text-bloom-primary mb-1">Powered by TitaniumNetwork's Ultraviolet</h3>
+            <h3 className="font-medium text-white text-bloom-primary mb-1">Powered by Interstellar Proxy</h3>
             <p className="text-white/70">
-              This proxy uses Ultraviolet, a powerful web proxy developed by TitaniumNetwork that allows you to browse
-              the web more freely.
+              This proxy uses Interstellar, a powerful web proxy that allows you to browse the web more freely and
+              securely.
             </p>
           </div>
         </div>
@@ -175,7 +181,7 @@ export default function ProxyPage() {
         <Card className="glass border-primary/20 mb-6">
           <CardHeader className="pb-2">
             <CardTitle className="text-xl text-white text-bloom-primary">Browse Securely</CardTitle>
-            <CardDescription>Access websites through the Ultraviolet proxy</CardDescription>
+            <CardDescription>Access websites through the Interstellar proxy</CardDescription>
           </CardHeader>
           <CardContent>
             <form onSubmit={handleNavigate} className="flex gap-2">
@@ -216,14 +222,12 @@ export default function ProxyPage() {
               </div>
             </div>
           )}
-          {!uvLoaded && (
+          {!proxyLoaded && (
             <div className="absolute inset-0 flex items-center justify-center bg-black/70 z-5">
               <div className="flex flex-col items-center text-center max-w-md">
                 <div className="w-16 h-16 border-4 border-primary/30 border-t-primary rounded-full animate-spin mb-4"></div>
-                <p className="text-white text-bloom-primary mb-2">Loading Ultraviolet Proxy...</p>
-                <p className="text-white/70 text-sm">
-                  Please wait while we initialize the TitaniumNetwork Ultraviolet proxy service.
-                </p>
+                <p className="text-white text-bloom-primary mb-2">Loading Interstellar Proxy...</p>
+                <p className="text-white/70 text-sm">Please wait while we initialize the Interstellar proxy service.</p>
               </div>
             </div>
           )}

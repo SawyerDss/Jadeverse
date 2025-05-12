@@ -24,6 +24,68 @@
   --ring: 158 64% 52%;
   --radius: 0.75rem;
   --jade: 158, 64%, 52%;
+  --scrollbar-thumb: var(--primary);
+  --scrollbar-track: rgba(0, 0, 0, 0.2);
+  --scrollbar-width: 8px;
+}
+
+/* Custom Scrollbar for the entire site */
+::-webkit-scrollbar {
+  width: var(--scrollbar-width);
+  height: var(--scrollbar-width);
+}
+
+::-webkit-scrollbar-track {
+  background: var(--scrollbar-track);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--scrollbar-thumb);
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--scrollbar-thumb);
+  opacity: 0.8;
+}
+
+/* Theme-specific scrollbars */
+[data-theme="blue"] ::-webkit-scrollbar-thumb {
+  background: hsla(221, 83%, 53%, 0.6);
+}
+
+[data-theme="blue"] ::-webkit-scrollbar-thumb:hover {
+  background: hsla(221, 83%, 53%, 0.8);
+}
+
+[data-theme="purple"] ::-webkit-scrollbar-thumb {
+  background: hsla(271, 91%, 65%, 0.6);
+}
+
+[data-theme="purple"] ::-webkit-scrollbar-thumb:hover {
+  background: hsla(271, 91%, 65%, 0.8);
+}
+
+[data-theme="red"] ::-webkit-scrollbar-thumb {
+  background: hsla(0, 84%, 60%, 0.6);
+}
+
+[data-theme="red"] ::-webkit-scrollbar-thumb:hover {
+  background: hsla(0, 84%, 60%, 0.8);
+}
+
+[data-theme="orange"] ::-webkit-scrollbar-thumb {
+  background: hsla(24, 94%, 53%, 0.6);
+}
+
+[data-theme="orange"] ::-webkit-scrollbar-thumb:hover {
+  background: hsla(24, 94%, 53%, 0.8);
+}
+
+[data-theme="rainbow"] ::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #9400d3);
+  animation: rainbow-rotate var(--rainbow-animation-duration) linear infinite;
 }
 
 /* Theme colors */
@@ -122,6 +184,9 @@ body {
   }
   50% {
     opacity: 0.5;
+  }
+  100% {
+    opacity: 1;
   }
 }
 
@@ -557,13 +622,17 @@ h6 {
 
 /* Mega title for homepage */
 .mega-title {
-  font-size: clamp(4rem, 15vw, 12rem);
+  font-size: 5rem;
   font-weight: 900;
-  letter-spacing: -0.05em;
-  line-height: 0.9;
-  margin-bottom: 2rem;
-  text-align: center;
-  position: relative;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 0.5rem;
+}
+
+@media (min-width: 768px) {
+  .mega-title {
+    font-size: 7rem;
+  }
 }
 
 .mega-title::after {
@@ -576,4 +645,191 @@ h6 {
   height: 4px;
   background: linear-gradient(90deg, rgba(0, 0, 0, 0), hsla(var(--jade), 0.7), rgba(0, 0, 0, 0));
   border-radius: 2px;
+}
+
+/* Add these styles to your globals.css */
+
+@keyframes glowPulse {
+  0% {
+    text-shadow: 0 0 5px rgba(0, 255, 170, 0.7), 0 0 10px rgba(0, 255, 170, 0.5), 0 0 15px rgba(0, 255, 170, 0.3);
+    transform: scale(1);
+  }
+  50% {
+    text-shadow: 0 0 10px rgba(0, 255, 170, 0.9), 0 0 20px rgba(0, 255, 170, 0.7), 0 0 30px rgba(0, 255, 170, 0.5);
+    transform: scale(1.03);
+  }
+  100% {
+    text-shadow: 0 0 5px rgba(0, 255, 170, 0.7), 0 0 10px rgba(0, 255, 170, 0.5), 0 0 15px rgba(0, 255, 170, 0.3);
+    transform: scale(1);
+  }
+}
+
+@keyframes floatAnimation {
+  0% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+  100% {
+    transform: translateY(0px);
+  }
+}
+
+.animated-title-container {
+  position: relative;
+  display: inline-block;
+  animation: floatAnimation 6s ease-in-out infinite;
+}
+
+.jade-mega-text {
+  color: #00ffaa;
+  animation: glowPulse 3s infinite;
+  display: inline-block;
+}
+
+.verse-mega-text {
+  color: #ffffff;
+  text-shadow: 0 0 5px rgba(255, 255, 255, 0.7), 0 0 10px rgba(255, 255, 255, 0.5);
+  display: inline-block;
+}
+
+.jade-text-glow {
+  background: linear-gradient(90deg, transparent, #00ffaa, transparent);
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 0.5;
+    width: 30%;
+  }
+  50% {
+    opacity: 1;
+    width: 50%;
+  }
+  100% {
+    opacity: 0.5;
+    width: 30%;
+  }
+}
+
+.text-bloom {
+  text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+}
+
+.text-bloom-primary {
+  text-shadow: 0 0 10px rgba(0, 255, 170, 0.5);
+}
+
+/* Sidebar animation */
+.pulse-animation {
+  animation: sidebar-pulse 0.5s ease;
+}
+
+@keyframes sidebar-pulse {
+  0% {
+    background-color: transparent;
+  }
+  50% {
+    background-color: hsla(var(--primary), 0.2);
+  }
+  100% {
+    background-color: transparent;
+  }
+}
+
+/* Add these browser-specific styles at the end of the file */
+
+/* Hide scrollbar for tab bar */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* Browser chrome styling */
+.browser-chrome {
+  color: #e4e4e7;
+}
+
+[data-theme="blue"] .browser-chrome {
+  background-color: #1a2036;
+}
+
+[data-theme="purple"] .browser-chrome {
+  background-color: #2d1a36;
+}
+
+[data-theme="red"] .browser-chrome {
+  background-color: #361a1a;
+}
+
+[data-theme="orange"] .browser-chrome {
+  background-color: #36291a;
+}
+
+[data-theme="rainbow"] .browser-chrome {
+  background-color: #202124;
+  animation: rainbow-hue-subtle var(--rainbow-animation-duration) linear infinite;
+}
+
+@keyframes rainbow-hue-subtle {
+  0% {
+    filter: hue-rotate(0deg) brightness(0.2);
+  }
+  100% {
+    filter: hue-rotate(360deg) brightness(0.2);
+  }
+}
+
+/* Rainbow scrollbar for rainbow theme */
+.theme-rainbow::-webkit-scrollbar-thumb {
+  background: linear-gradient(to bottom, #ff0000, #ff7f00, #ffff00, #00ff00, #0000ff, #4b0082, #8b00ff);
+}
+
+/* Enhanced sidebar styling */
+.sidebar {
+  background-color: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 0 20px rgba(16, 185, 129, 0.2);
+}
+
+/* Pulse animation for sidebar groups */
+@keyframes pulse-animation {
+  0% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  }
+  70% {
+    box-shadow: 0 0 0 10px rgba(16, 185, 129, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  }
+}
+
+.pulse-animation {
+  animation: pulse-animation 1s ease-out;
+}
+
+/* Improved scrollbar for sidebar */
+.sidebar-nav::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-nav::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 10px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb {
+  background: rgba(16, 185, 129, 0.5);
+  border-radius: 10px;
+}
+
+.sidebar-nav::-webkit-scrollbar-thumb:hover {
+  background: rgba(16, 185, 129, 0.7);
 }

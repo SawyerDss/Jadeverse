@@ -2,116 +2,74 @@
 
 import type React from "react"
 
-import "./globals.css"
-import "./neon-theme.css" // Add this import for neon theme support
 import { Inter } from "next/font/google"
-import { ThemeProvider } from "@/lib/theme-context"
+import { useEffect, useState } from "react"
 import Sidebar from "@/components/sidebar"
-import AnimatedBackground from "@/components/animated-background"
-import FloatingHexagons from "@/components/floating-hexagons"
+import { ThemeProvider } from "@/lib/theme-context"
 import { AuthProvider } from "@/lib/auth-context"
 import { GamesProvider } from "@/lib/games-context"
 import { NotificationProvider } from "@/lib/notification-context"
-import { ChatProvider } from "@/lib/chat-context"
-import NotificationCenter from "@/components/notification-center"
-import ChatPanel from "@/components/chat-panel"
+import MouseTrail from "@/components/mouse-trail"
+import ButtonEffects from "@/components/button-effects"
 import CustomContextMenu from "@/components/custom-context-menu"
-import { useState, useEffect } from "react"
-import { MouseTrail } from "@/components/mouse-trail"
-import { ButtonEffects } from "@/components/button-effects"
+import { ChatProvider } from "@/lib/chat-context"
 import { SoundProvider } from "@/lib/sound-context"
+import { SettingsProvider } from "@/lib/settings-context"
+import { MoviesProvider } from "@/lib/movies-context"
+import "../app/globals.css"
+import "../app/neon-theme.css"
 
 const inter = Inter({ subsets: ["latin"] })
 
-export default function ClientRootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
-  const [mounted, setMounted] = useState(false)
-  const [effectsEnabled, setEffectsEnabled] = useState(false)
+export default function ClientRootLayout({ children }: { children: React.ReactNode }) {
   const [mouseTrailEnabled, setMouseTrailEnabled] = useState(false)
+  const [buttonEffectsEnabled, setButtonEffectsEnabled] = useState(true)
 
-  // Check user preferences from localStorage after mount
   useEffect(() => {
-    setMounted(true)
-    const storedEffects = localStorage.getItem("buttonEffects")
-    const storedMouseTrail = localStorage.getItem("mouseTrail")
+    // Load settings from localStorage
+    const mouseTrail = localStorage.getItem("mouseTrail")
+    if (mouseTrail !== null) {
+      setMouseTrailEnabled(mouseTrail === "true")
+    }
 
-    if (storedEffects) setEffectsEnabled(storedEffects === "true")
-    if (storedMouseTrail) setMouseTrailEnabled(storedMouseTrail === "true")
+    const buttonEffects = localStorage.getItem("buttonEffects")
+    if (buttonEffects !== null) {
+      setButtonEffectsEnabled(buttonEffects === "true")
+    }
   }, [])
 
-  // Custom tab title and favicon
-  useEffect(() => {
-    const customTitle = localStorage.getItem("customTabTitle")
-    const customFavicon = localStorage.getItem("customTabFavicon")
-
-    if (customTitle) document.title = customTitle
-    if (customFavicon) {
-      const linkElements = document.querySelectorAll("link[rel='icon']")
-      if (linkElements.length > 0) {
-        // Update existing favicon
-        linkElements.forEach((link) => {
-          link.setAttribute("href", customFavicon)
-        })
-      } else {
-        // Create new favicon link
-        const link = document.createElement("link")
-        link.rel = "icon"
-        link.href = customFavicon
-        document.head.appendChild(link)
-      }
-    }
-  }, [mounted])
-
   return (
-    <html lang="en" suppressHydrationWarning>
+    <html lang="en">
       <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false} disableTransitionOnChange>
-          <NotificationProvider>
-            <GamesProvider>
+        <ThemeProvider>
+          <SettingsProvider>
+            <NotificationProvider>
               <AuthProvider>
-                <ChatProvider>
-                  <SoundProvider>
-                    <div className="relative min-h-screen bg-black overflow-hidden">
-                      {/* Animated background */}
-                      <AnimatedBackground />
-                      <FloatingHexagons />
+                <GamesProvider>
+                  <MoviesProvider>
+                    <ChatProvider>
+                      <SoundProvider>
+                        <div className="min-h-screen bg-background text-foreground relative overflow-hidden">
+                          <div className="fixed inset-0 bg-grid-pattern opacity-5 pointer-events-none"></div>
+                          <div className="fixed inset-0 bg-gradient-radial from-transparent to-background pointer-events-none"></div>
 
-                      {/* Mouse trail effect (conditionally rendered) */}
-                      {mouseTrailEnabled && <MouseTrail enabled={true} />}
+                          <Sidebar />
 
-                      {/* Button effects (conditionally rendered) */}
-                      {effectsEnabled && <ButtonEffects enabled={true} />}
+                          <main className="ml-16 md:ml-64 min-h-screen relative">
+                            <div className="container mx-auto px-4">{children}</div>
+                          </main>
 
-                      {/* Sidebar navigation */}
-                      <Sidebar />
-
-                      {/* Main content - with transition for sidebar collapse */}
-                      <main className="relative z-10 min-h-screen px-4 sm:px-6 lg:px-8 ml-16 transition-all duration-300">
-                        {children}
-                      </main>
-
-                      {/* Notification center */}
-                      <div className="fixed top-4 right-4 z-50">
-                        <NotificationCenter />
-                      </div>
-
-                      {/* Chat panel */}
-                      <ChatPanel />
-
-                      {/* Custom context menu */}
-                      <CustomContextMenu />
-
-                      {/* Jade glow effect */}
-                      <div className="fixed bottom-0 left-0 right-0 h-[300px] bg-gradient-to-t from-primary/50 to-transparent z-0"></div>
-                    </div>
-                  </SoundProvider>
-                </ChatProvider>
+                          <CustomContextMenu />
+                          {mouseTrailEnabled && <MouseTrail />}
+                          {buttonEffectsEnabled && <ButtonEffects />}
+                        </div>
+                      </SoundProvider>
+                    </ChatProvider>
+                  </MoviesProvider>
+                </GamesProvider>
               </AuthProvider>
-            </GamesProvider>
-          </NotificationProvider>
+            </NotificationProvider>
+          </SettingsProvider>
         </ThemeProvider>
       </body>
     </html>

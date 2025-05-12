@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { useNotification } from "@/lib/notification-context"
-import { Send, BotIcon as Robot, Sparkles, BookOpen, Calculator, Globe, Code, Lightbulb } from "lucide-react"
+import { Send, BotIcon as Robot, Sparkles } from "lucide-react"
 import AnimatedText from "@/components/animated-text"
 
 type Message = {
@@ -164,18 +164,14 @@ export default function JadeAIPage() {
     )
   }
 
-  // Handle quick topic selection
-  const handleQuickTopic = (topic: string) => {
-    const topicMessages: Record<string, string> = {
-      math: "Can you help me with math?",
-      science: "Tell me something about science",
-      history: "I'm interested in history",
-      programming: "I want to learn programming",
-      games: "Tell me about games",
-    }
-
-    setInput(topicMessages[topic])
-  }
+  // Quick topic buttons
+  const quickTopics = [
+    { name: "Math", query: "Can you help me with math?" },
+    { name: "Science", query: "Tell me something about science" },
+    { name: "History", query: "I'm interested in history" },
+    { name: "Programming", query: "I want to learn programming" },
+    { name: "Games", query: "Tell me about games" },
+  ]
 
   return (
     <div className="py-16">
@@ -187,158 +183,94 @@ export default function JadeAIPage() {
           </h1>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
-          {/* Sidebar with topic options */}
-          <div className="md:col-span-1">
-            <Card className="glass border-primary/20">
-              <CardHeader>
-                <CardTitle className="text-xl text-white">Topics</CardTitle>
-                <CardDescription>Get help with various subjects</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-2">
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left"
-                  onClick={() => handleQuickTopic("math")}
-                >
-                  <Calculator className="mr-2 h-4 w-4" />
-                  Mathematics
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left"
-                  onClick={() => handleQuickTopic("science")}
-                >
-                  <Sparkles className="mr-2 h-4 w-4" />
-                  Science
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left"
-                  onClick={() => handleQuickTopic("history")}
-                >
-                  <BookOpen className="mr-2 h-4 w-4" />
-                  History
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left"
-                  onClick={() => handleQuickTopic("programming")}
-                >
-                  <Code className="mr-2 h-4 w-4" />
-                  Programming
-                </Button>
-                <Button
-                  variant="outline"
-                  className="w-full justify-start text-left"
-                  onClick={() => handleQuickTopic("games")}
-                >
-                  <Globe className="mr-2 h-4 w-4" />
-                  Games
-                </Button>
-              </CardContent>
-            </Card>
+        <Card className="glass border-primary/20 h-[600px] flex flex-col">
+          <CardHeader>
+            <CardTitle className="text-xl text-white">Chat with JadeAI</CardTitle>
+            <CardDescription>Your personal AI assistant</CardDescription>
 
-            <Card className="glass border-primary/20 mt-4">
-              <CardHeader>
-                <CardTitle className="text-xl text-white">Tips</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-2 text-sm">
-                <div className="flex items-start gap-2">
-                  <Lightbulb className="h-4 w-4 text-primary mt-1" />
-                  <p>Be specific with your questions for better answers</p>
+            {/* Quick topic buttons */}
+            <div className="flex flex-wrap gap-2 mt-2">
+              {quickTopics.map((topic) => (
+                <Button
+                  key={topic.name}
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setInput(topic.query)}
+                  className="bg-primary/10 border-primary/30 hover:bg-primary/20"
+                >
+                  <Sparkles className="h-3 w-3 mr-1" />
+                  {topic.name}
+                </Button>
+              ))}
+            </div>
+          </CardHeader>
+          <CardContent className="flex-1 overflow-y-auto mb-4">
+            <div className="space-y-4">
+              {messages.map((message) => (
+                <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
+                  <div
+                    className={`max-w-[80%] rounded-lg p-3 ${
+                      message.sender === "user"
+                        ? "bg-primary/20 border border-primary/30"
+                        : "bg-gray-800/50 border border-gray-700/30"
+                    }`}
+                  >
+                    {message.sender === "ai" && (
+                      <div className="flex items-center mb-1">
+                        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-2">
+                          <Robot className="h-3 w-3 text-primary" />
+                        </div>
+                        <span className="text-xs font-medium text-primary/80">JadeAI</span>
+                      </div>
+                    )}
+                    <p className="text-white">{message.content}</p>
+                    <p className="text-xs text-white/50 mt-1 text-right">
+                      {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+                    </p>
+                  </div>
                 </div>
-                <div className="flex items-start gap-2">
-                  <Lightbulb className="h-4 w-4 text-primary mt-1" />
-                  <p>Ask follow-up questions to get more details</p>
-                </div>
-                <div className="flex items-start gap-2">
-                  <Lightbulb className="h-4 w-4 text-primary mt-1" />
-                  <p>JadeAI can help with homework and general knowledge</p>
-                </div>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Chat area */}
-          <div className="md:col-span-3">
-            <Card className="glass border-primary/20 h-[600px] flex flex-col">
-              <CardHeader>
-                <CardTitle className="text-xl text-white">Chat with JadeAI</CardTitle>
-                <CardDescription>Your personal AI assistant</CardDescription>
-              </CardHeader>
-              <CardContent className="flex-1 overflow-y-auto mb-4">
-                <div className="space-y-4">
-                  {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}
-                    >
+              ))}
+              {isTyping && (
+                <div className="flex justify-start">
+                  <div className="max-w-[80%] rounded-lg p-3 bg-gray-800/50 border border-gray-700/30">
+                    <div className="flex items-center">
+                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-2">
+                        <Robot className="h-3 w-3 text-primary" />
+                      </div>
+                      <span className="text-xs font-medium text-primary/80">JadeAI</span>
+                    </div>
+                    <div className="flex items-center space-x-1 mt-2">
+                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
                       <div
-                        className={`max-w-[80%] rounded-lg p-3 ${
-                          message.sender === "user"
-                            ? "bg-primary/20 border border-primary/30"
-                            : "bg-gray-800/50 border border-gray-700/30"
-                        }`}
-                      >
-                        {message.sender === "ai" && (
-                          <div className="flex items-center mb-1">
-                            <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-2">
-                              <Robot className="h-3 w-3 text-primary" />
-                            </div>
-                            <span className="text-xs font-medium text-primary/80">JadeAI</span>
-                          </div>
-                        )}
-                        <p className="text-white">{message.content}</p>
-                        <p className="text-xs text-white/50 mt-1 text-right">
-                          {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
-                        </p>
-                      </div>
+                        className="w-2 h-2 rounded-full bg-primary animate-pulse"
+                        style={{ animationDelay: "0.2s" }}
+                      ></div>
+                      <div
+                        className="w-2 h-2 rounded-full bg-primary animate-pulse"
+                        style={{ animationDelay: "0.4s" }}
+                      ></div>
                     </div>
-                  ))}
-                  {isTyping && (
-                    <div className="flex justify-start">
-                      <div className="max-w-[80%] rounded-lg p-3 bg-gray-800/50 border border-gray-700/30">
-                        <div className="flex items-center">
-                          <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-2">
-                            <Robot className="h-3 w-3 text-primary" />
-                          </div>
-                          <span className="text-xs font-medium text-primary/80">JadeAI</span>
-                        </div>
-                        <div className="flex items-center space-x-1 mt-2">
-                          <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-                          <div
-                            className="w-2 h-2 rounded-full bg-primary animate-pulse"
-                            style={{ animationDelay: "0.2s" }}
-                          ></div>
-                          <div
-                            className="w-2 h-2 rounded-full bg-primary animate-pulse"
-                            style={{ animationDelay: "0.4s" }}
-                          ></div>
-                        </div>
-                      </div>
-                    </div>
-                  )}
-                  <div ref={messagesEndRef} />
+                  </div>
                 </div>
-              </CardContent>
-              <div className="p-4 border-t border-primary/20">
-                <form onSubmit={handleSendMessage} className="flex gap-2">
-                  <Input
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Ask JadeAI anything..."
-                    className="flex-1 bg-black/50 border-primary/30 focus:border-primary"
-                  />
-                  <Button type="submit" disabled={!input.trim() || isTyping}>
-                    <Send className="h-4 w-4" />
-                    <span className="sr-only">Send</span>
-                  </Button>
-                </form>
-              </div>
-            </Card>
+              )}
+              <div ref={messagesEndRef} />
+            </div>
+          </CardContent>
+          <div className="p-4 border-t border-primary/20">
+            <form onSubmit={handleSendMessage} className="flex gap-2">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask JadeAI anything..."
+                className="flex-1 bg-black/50 border-primary/30 focus:border-primary"
+              />
+              <Button type="submit" disabled={!input.trim() || isTyping}>
+                <Send className="h-4 w-4" />
+                <span className="sr-only">Send</span>
+              </Button>
+            </form>
           </div>
-        </div>
+        </Card>
       </div>
     </div>
   )

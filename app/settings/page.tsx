@@ -1,38 +1,52 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import { Settings, Moon, Sun, Eye, EyeOff, Bell, MousePointer, Sparkles, Palette } from "lucide-react"
+import {
+  Settings,
+  EyeOff,
+  Palette,
+  AlertTriangle,
+  Beaker,
+  Film,
+  Code,
+  Download,
+  Globe,
+  Shield,
+  BotIcon as Robot,
+} from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
 import { useAuth } from "@/lib/auth-context"
-import { useNotification } from "@/lib/notification-context"
 import GlowingButton from "@/components/glowing-button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useRouter } from "next/navigation"
 import { ThemeCustomizer } from "./theme-customizer"
 import { useTheme } from "@/lib/theme-context"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useSettings } from "@/lib/settings-context"
 
 export default function SettingsPage() {
   const { user } = useAuth()
-  const { addNotification, clearNotifications } = useNotification()
   const router = useRouter()
   const { theme, setTheme } = useTheme()
+  const { experimentalFeatures, toggleFeature } = useSettings()
 
   const [settings, setSettings] = useState({
     darkMode: true,
     animations: true,
     highContrast: false,
     reducedMotion: false,
-    notifications: true,
     aboutBlankCloaking: false,
+    autoTabCloaking: false,
     mouseTrail: false,
     buttonEffects: true,
     snowEffect: false,
     matrixEffect: false,
     tabTitle: document.title,
     tabIcon: "/favicon.ico",
+    panicKey: "Escape",
   })
 
   // Load settings from localStorage
@@ -56,6 +70,33 @@ export default function SettingsPage() {
       }
     }
   }, [])
+
+  // Set up panic key listener
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === settings.panicKey) {
+        // Close the tab
+        window.close()
+
+        // Fallback if window.close() doesn't work (some browsers block it)
+        window.location.href = "about:blank"
+      }
+    }
+
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [settings.panicKey])
+
+  // Set up auto tab cloaking
+  useEffect(() => {
+    // Check if we're already in an iframe (to prevent infinite recursion)
+    const isInIframe = window !== window.top
+
+    // Only proceed if auto tab cloaking is enabled and we're not already in an iframe
+    if (settings.autoTabCloaking && !isInIframe && !window.location.href.includes("about:blank")) {
+      enableAboutBlankCloaking()
+    }
+  }, [settings.autoTabCloaking]) // Only run when the setting changes
 
   // Save settings to localStorage
   const updateSetting = (key: string, value: any) => {
@@ -90,14 +131,6 @@ export default function SettingsPage() {
     if (key === "buttonEffects") {
       localStorage.setItem("buttonEffects", String(value))
     }
-
-    // Show notification
-    addNotification({
-      title: "Settings Updated",
-      message: `${key.charAt(0).toUpperCase() + key.slice(1).replace(/([A-Z])/g, " $1")} has been updated`,
-      type: "success",
-      duration: 3000,
-    })
   }
 
   const enableAboutBlankCloaking = () => {
@@ -123,13 +156,8 @@ export default function SettingsPage() {
     }
   }
 
-  const testNotification = () => {
-    addNotification({
-      title: "Test Notification",
-      message: "This is a test notification to check if notifications are working correctly.",
-      type: "info",
-      duration: 5000,
-    })
+  const testPanicButton = () => {
+    alert(`Press the ${settings.panicKey} key to test the panic button feature.`)
   }
 
   return (
@@ -143,11 +171,10 @@ export default function SettingsPage() {
         </div>
 
         <Tabs defaultValue="appearance">
-          <TabsList className="grid grid-cols-4 mb-6">
+          <TabsList className="grid grid-cols-3 mb-6">
             <TabsTrigger value="appearance">Appearance</TabsTrigger>
-            <TabsTrigger value="effects">Effects</TabsTrigger>
             <TabsTrigger value="privacy">Privacy</TabsTrigger>
-            <TabsTrigger value="account">Account</TabsTrigger>
+            <TabsTrigger value="experimental">Experimental</TabsTrigger>
           </TabsList>
 
           <TabsContent value="appearance" className="space-y-6">
@@ -160,226 +187,6 @@ export default function SettingsPage() {
 
               <ThemeCustomizer currentTheme={theme} onThemeChange={setTheme} />
             </div>
-
-            <Card className="glass border-primary/20">
-              <CardHeader>
-                <CardTitle className="text-xl text-white">Display Settings</CardTitle>
-                <CardDescription>Customize the look of JadeVerse</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Moon className="h-5 w-5 text-primary" />
-                    <Label htmlFor="dark-mode">Dark Mode</Label>
-                  </div>
-                  <Switch
-                    id="dark-mode"
-                    checked={settings.darkMode}
-                    onCheckedChange={(checked) => updateSetting("darkMode", checked)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Eye className="h-5 w-5 text-primary" />
-                    <Label htmlFor="animations">Animations</Label>
-                  </div>
-                  <Switch
-                    id="animations"
-                    checked={settings.animations}
-                    onCheckedChange={(checked) => updateSetting("animations", checked)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Sun className="h-5 w-5 text-primary" />
-                    <Label htmlFor="high-contrast">High Contrast</Label>
-                  </div>
-                  <Switch
-                    id="high-contrast"
-                    checked={settings.highContrast}
-                    onCheckedChange={(checked) => updateSetting("highContrast", checked)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <EyeOff className="h-5 w-5 text-primary" />
-                    <Label htmlFor="reduced-motion">Reduced Motion</Label>
-                  </div>
-                  <Switch
-                    id="reduced-motion"
-                    checked={settings.reducedMotion}
-                    onCheckedChange={(checked) => updateSetting("reducedMotion", checked)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-              </CardContent>
-            </Card>
-
-            <Card className="glass border-primary/20">
-              <CardHeader>
-                <CardTitle className="text-xl text-white">Notifications</CardTitle>
-                <CardDescription>Manage notification preferences</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Bell className="h-5 w-5 text-primary" />
-                    <Label htmlFor="notifications">Enable Notifications</Label>
-                  </div>
-                  <Switch
-                    id="notifications"
-                    checked={settings.notifications}
-                    onCheckedChange={(checked) => updateSetting("notifications", checked)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-
-                <div className="flex gap-2 pt-2">
-                  <button className="text-primary hover:text-primary/80 text-sm" onClick={testNotification}>
-                    Test Notification
-                  </button>
-                  <span className="text-white/50">•</span>
-                  <button
-                    className="text-primary hover:text-primary/80 text-sm"
-                    onClick={() => {
-                      clearNotifications()
-                      addNotification({
-                        title: "Notifications Cleared",
-                        message: "All notifications have been cleared",
-                        type: "info",
-                        duration: 3000,
-                      })
-                    }}
-                  >
-                    Clear All Notifications
-                  </button>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="effects" className="space-y-6">
-            <Card className="glass border-primary/20">
-              <CardHeader>
-                <CardTitle className="text-xl text-white">Visual Effects</CardTitle>
-                <CardDescription>Customize visual effects and animations</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <MousePointer className="h-5 w-5 text-primary" />
-                    <Label htmlFor="mouse-trail">Mouse Trail</Label>
-                  </div>
-                  <Switch
-                    id="mouse-trail"
-                    checked={settings.mouseTrail}
-                    onCheckedChange={(checked) => updateSetting("mouseTrail", checked)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Sparkles className="h-5 w-5 text-primary" />
-                    <Label htmlFor="button-effects">Button Click Effects</Label>
-                  </div>
-                  <Switch
-                    id="button-effects"
-                    checked={settings.buttonEffects}
-                    onCheckedChange={(checked) => updateSetting("buttonEffects", checked)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-5 w-5 text-primary"
-                    >
-                      <path d="M20 17.58A5 5 0 0 0 18 8h-1.26A8 8 0 1 0 4 16.25" />
-                      <path d="m8 16 2 2 4-4" />
-                    </svg>
-                    <Label htmlFor="snow-effect">Snow Effect</Label>
-                  </div>
-                  <Switch
-                    id="snow-effect"
-                    checked={settings.snowEffect}
-                    onCheckedChange={(checked) => updateSetting("snowEffect", checked)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      className="h-5 w-5 text-primary"
-                    >
-                      <path d="M12 2v20M2 12h20M7 12l5-5M7 12l5 5M17 12l-5-5M17 12l-5 5" />
-                    </svg>
-                    <Label htmlFor="matrix-effect">Matrix Effect</Label>
-                  </div>
-                  <Switch
-                    id="matrix-effect"
-                    checked={settings.matrixEffect}
-                    onCheckedChange={(checked) => updateSetting("matrixEffect", checked)}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-
-                <div className="pt-4">
-                  <GlowingButton
-                    className="w-full"
-                    onClick={() => {
-                      // Create confetti effect
-                      for (let i = 0; i < 100; i++) {
-                        const confetti = document.createElement("div")
-                        confetti.className = "confetti"
-                        confetti.style.left = `${Math.random() * 100}vw`
-                        confetti.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`
-                        confetti.style.width = `${Math.random() * 10 + 5}px`
-                        confetti.style.height = `${Math.random() * 10 + 5}px`
-                        confetti.style.animationDuration = `${Math.random() * 3 + 2}s`
-                        document.body.appendChild(confetti)
-
-                        setTimeout(() => {
-                          if (confetti.parentNode) {
-                            confetti.parentNode.removeChild(confetti)
-                          }
-                        }, 5000)
-                      }
-
-                      addNotification({
-                        title: "Confetti!",
-                        message: "Enjoy the celebration!",
-                        type: "success",
-                      })
-                    }}
-                  >
-                    Test Confetti Effect
-                  </GlowingButton>
-                </div>
-              </CardContent>
-            </Card>
           </TabsContent>
 
           <TabsContent value="privacy" className="space-y-6">
@@ -435,6 +242,23 @@ export default function SettingsPage() {
                   accessing the site in restricted environments.
                 </p>
 
+                <div className="flex items-center justify-between mt-4">
+                  <div className="flex items-center space-x-2">
+                    <EyeOff className="h-5 w-5 text-primary" />
+                    <Label htmlFor="auto-tab-cloaking">Auto Tab Cloaking</Label>
+                  </div>
+                  <Switch
+                    id="auto-tab-cloaking"
+                    checked={settings.autoTabCloaking}
+                    onCheckedChange={(checked) => updateSetting("autoTabCloaking", checked)}
+                    className="data-[state=checked]:bg-primary"
+                  />
+                </div>
+                <p className="text-white/50 text-xs">
+                  Automatically opens JadeVerse in an about:blank page every time you visit. This hides the website URL
+                  completely.
+                </p>
+
                 <div className="pt-4">
                   <GlowingButton className="w-full" onClick={enableAboutBlankCloaking}>
                     Open in about:blank
@@ -442,37 +266,183 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
+
+            <Card className="glass border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-xl text-white flex items-center">
+                  <AlertTriangle className="h-5 w-5 text-amber-400 mr-2" />
+                  Panic Button
+                </CardTitle>
+                <CardDescription>Set up a key to quickly close the tab in emergency situations</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="panic-key">Panic Key</Label>
+                  <Select value={settings.panicKey} onValueChange={(value) => updateSetting("panicKey", value)}>
+                    <SelectTrigger className="bg-black/50 border-primary/30 focus:border-primary">
+                      <SelectValue placeholder="Select a key" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="Escape">Escape (Esc)</SelectItem>
+                      <SelectItem value="F1">F1</SelectItem>
+                      <SelectItem value="F2">F2</SelectItem>
+                      <SelectItem value="F3">F3</SelectItem>
+                      <SelectItem value="F4">F4</SelectItem>
+                      <SelectItem value="`">`</SelectItem>
+                      <SelectItem value="Home">Home</SelectItem>
+                      <SelectItem value="End">End</SelectItem>
+                      <SelectItem value="Insert">Insert</SelectItem>
+                      <SelectItem value="Delete">Delete</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  <p className="text-white/50 text-xs">
+                    When you press this key, the tab will immediately close. Use this in emergency situations when you
+                    need to quickly hide the site.
+                  </p>
+                </div>
+
+                <div className="pt-4">
+                  <GlowingButton className="w-full" onClick={testPanicButton}>
+                    Test Panic Button
+                  </GlowingButton>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
-          <TabsContent value="account">
-            {user ? (
-              <Card className="glass border-primary/20">
-                <CardHeader>
-                  <CardTitle className="text-xl text-white">Account</CardTitle>
-                  <CardDescription>Manage your account settings</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <div className="space-y-1">
-                    <p className="text-sm text-white/70">Signed in as:</p>
-                    <p className="text-white font-medium">{user.username}</p>
-                    <p className="text-white/70 text-sm">{user.email}</p>
+          <TabsContent value="experimental" className="space-y-6">
+            <Card className="glass border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-xl text-white flex items-center">
+                  <Beaker className="h-5 w-5 text-amber-400 mr-2" />
+                  Experimental Features
+                </CardTitle>
+                <CardDescription>Enable or disable experimental features</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-md mb-4">
+                  <p className="text-amber-400 text-sm">
+                    Warning: These features are experimental and may not work as expected. Enable at your own risk.
+                  </p>
+                </div>
+
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-2">
+                    <Film className="h-5 w-5 text-primary" />
+                    <Label htmlFor="show-movies">Entertainment Section</Label>
                   </div>
-                </CardContent>
-              </Card>
-            ) : (
-              <Card className="glass border-primary/20">
-                <CardHeader>
-                  <CardTitle className="text-xl text-white">Account</CardTitle>
-                  <CardDescription>You are not signed in</CardDescription>
-                </CardHeader>
-                <CardContent>
-                  <p className="text-white/70 mb-4">Sign in to access all features of JadeVerse</p>
-                  <GlowingButton className="w-full" onClick={() => router.push("/login")}>
-                    Sign In
+                  <Switch
+                    id="show-movies"
+                    checked={experimentalFeatures.showMovies}
+                    onCheckedChange={() => toggleFeature("showMovies")}
+                    className="data-[state=checked]:bg-primary"
+                  />
+                </div>
+                <p className="text-white/50 text-xs">Enable the Entertainment section to browse movies and shows.</p>
+
+                <div className="flex items-center justify-between mt-4">
+                  <div className="flex items-center space-x-2">
+                    <Robot className="h-5 w-5 text-primary" />
+                    <Label htmlFor="show-jade-ai">JadeAI Assistant</Label>
+                  </div>
+                  <Switch
+                    id="show-jade-ai"
+                    checked={experimentalFeatures.showJadeAI}
+                    onCheckedChange={() => toggleFeature("showJadeAI")}
+                    className="data-[state=checked]:bg-primary"
+                  />
+                </div>
+                <p className="text-white/50 text-xs">
+                  Enable the JadeAI assistant to help you with questions and tasks.
+                </p>
+
+                <div className="flex items-center justify-between mt-4">
+                  <div className="flex items-center space-x-2">
+                    <Code className="h-5 w-5 text-primary" />
+                    <Label htmlFor="show-exploits">Exploits Section</Label>
+                  </div>
+                  <Switch
+                    id="show-exploits"
+                    checked={experimentalFeatures.showExploits}
+                    onCheckedChange={() => toggleFeature("showExploits")}
+                    className="data-[state=checked]:bg-primary"
+                  />
+                </div>
+                <p className="text-white/50 text-xs">Enable the Exploits section to access game exploits and cheats.</p>
+
+                <div className="flex items-center justify-between mt-4">
+                  <div className="flex items-center space-x-2">
+                    <Download className="h-5 w-5 text-primary" />
+                    <Label htmlFor="show-downloads">Downloads Section</Label>
+                  </div>
+                  <Switch
+                    id="show-downloads"
+                    checked={experimentalFeatures.showDownloads}
+                    onCheckedChange={() => toggleFeature("showDownloads")}
+                    className="data-[state=checked]:bg-primary"
+                  />
+                </div>
+                <p className="text-white/50 text-xs">Enable the Downloads section to access downloadable content.</p>
+
+                <div className="flex items-center justify-between mt-4">
+                  <div className="flex items-center space-x-2">
+                    <Globe className="h-5 w-5 text-primary" />
+                    <Label htmlFor="show-browser">Browser Tool</Label>
+                  </div>
+                  <Switch
+                    id="show-browser"
+                    checked={experimentalFeatures.showBrowser}
+                    onCheckedChange={() => toggleFeature("showBrowser")}
+                    className="data-[state=checked]:bg-primary"
+                  />
+                </div>
+                <p className="text-white/50 text-xs">Enable the Browser tool to browse the web within JadeVerse.</p>
+
+                <div className="flex items-center justify-between mt-4">
+                  <div className="flex items-center space-x-2">
+                    <Shield className="h-5 w-5 text-primary" />
+                    <Label htmlFor="show-proxy">Proxy Tool</Label>
+                  </div>
+                  <Switch
+                    id="show-proxy"
+                    checked={experimentalFeatures.showProxy}
+                    onCheckedChange={() => toggleFeature("showProxy")}
+                    className="data-[state=checked]:bg-primary"
+                  />
+                </div>
+                <p className="text-white/50 text-xs">Enable the Proxy tool to access blocked websites.</p>
+
+                <div className="pt-4">
+                  <GlowingButton
+                    className="w-full"
+                    onClick={() => {
+                      // Reset all experimental features to default
+                      const defaultFeatures = {
+                        showMovies: true,
+                        showExploits: true,
+                        showDownloads: true,
+                        showBrowser: true,
+                        showProxy: true,
+                        showJadeAI: false,
+                        enableMouseTrail: false,
+                      }
+
+                      // Update each feature to match defaults
+                      Object.keys(defaultFeatures).forEach((key) => {
+                        const feature = key as keyof typeof defaultFeatures
+                        if (experimentalFeatures[feature] !== defaultFeatures[feature]) {
+                          toggleFeature(feature)
+                        }
+                      })
+
+                      alert("All experimental features have been reset to their default values.")
+                    }}
+                  >
+                    Reset to Defaults
                   </GlowingButton>
-                </CardContent>
-              </Card>
-            )}
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>

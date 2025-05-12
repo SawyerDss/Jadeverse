@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useRef } from "react"
 import { useParams, useRouter } from "next/navigation"
 import { useGames, type Game } from "@/lib/games-context"
 import { Maximize, Minimize, ArrowLeft, ExternalLink } from "lucide-react"
@@ -12,6 +12,8 @@ export default function AppPage() {
   const router = useRouter()
   const [app, setApp] = useState<Game | null>(null)
   const [isFullscreen, setIsFullscreen] = useState(false)
+  const appContainerRef = useRef<HTMLDivElement>(null)
+  const iframeRef = useRef<HTMLIFrameElement>(null)
 
   useEffect(() => {
     const foundApp = games.find((g) => g.id === id)
@@ -23,8 +25,49 @@ export default function AppPage() {
   }, [games, id, router])
 
   const toggleFullscreen = () => {
-    setIsFullscreen(!isFullscreen)
+    if (!appContainerRef.current) return
+
+    if (!isFullscreen) {
+      if (appContainerRef.current.requestFullscreen) {
+        appContainerRef.current
+          .requestFullscreen()
+          .then(() => setIsFullscreen(true))
+          .catch((err) => {
+            console.error(`Error attempting to enable fullscreen: ${err.message}`)
+            // Fallback to our custom fullscreen if browser API fails
+            setIsFullscreen(true)
+          })
+      } else {
+        // Fallback for browsers that don't support the Fullscreen API
+        setIsFullscreen(true)
+      }
+    } else {
+      if (document.fullscreenElement) {
+        document
+          .exitFullscreen()
+          .then(() => setIsFullscreen(false))
+          .catch((err) => {
+            console.error(`Error attempting to exit fullscreen: ${err.message}`)
+            setIsFullscreen(false)
+          })
+      } else {
+        // Just use our custom fullscreen exit if not using browser API
+        setIsFullscreen(false)
+      }
+    }
   }
+
+  // Listen for fullscreen change events from the browser
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement)
+    }
+
+    document.addEventListener("fullscreenchange", handleFullscreenChange)
+    return () => {
+      document.removeEventListener("fullscreenchange", handleFullscreenChange)
+    }
+  }, [])
 
   const goBack = () => {
     router.push("/apps")
@@ -67,6 +110,7 @@ export default function AppPage() {
 
       {/* App iframe container */}
       <div
+        ref={appContainerRef}
         className={`relative bg-black ${
           isFullscreen
             ? "w-full h-full"
@@ -76,10 +120,11 @@ export default function AppPage() {
         {/* App iframe */}
         {app.url ? (
           <iframe
+            ref={iframeRef}
             src={app.url}
             className="w-full h-full"
             allowFullScreen
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; fullscreen"
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
