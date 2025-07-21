@@ -12,14 +12,12 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Lightbulb, Send, Check, MessageSquare } from "lucide-react"
 import GlowingButton from "@/components/glowing-button"
 import { useAuth } from "@/lib/auth-context"
-import { useNotification } from "@/lib/notification-context"
 import AnimatedText from "@/components/animated-text"
 
 type SuggestionType = "feature" | "content" | "bug" | "other"
 
 export default function SuggestionsPage() {
   const { user } = useAuth()
-  const { addNotification } = useNotification()
   const [submitted, setSubmitted] = useState(false)
   const [formData, setFormData] = useState({
     type: "feature" as SuggestionType,
@@ -32,13 +30,6 @@ export default function SuggestionsPage() {
 
     // In a real app, you would send this to your backend
     console.log("Suggestion submitted:", formData)
-
-    // Show success notification
-    addNotification({
-      title: "Suggestion Submitted",
-      message: "Thank you for your feedback! We'll review your suggestion.",
-      type: "success",
-    })
 
     // Show success message
     setSubmitted(true)
@@ -76,7 +67,7 @@ export default function SuggestionsPage() {
         <Card className="glass border-primary/20 mb-8">
           <CardHeader>
             <CardTitle className="text-xl text-white text-bloom">Share Your Ideas</CardTitle>
-            <CardDescription>We value your feedback! Let us know how we can improve JadeVerse.</CardDescription>
+            <CardDescription>We value your feedback! Let us know how we can improve s0lara.</CardDescription>
           </CardHeader>
           <CardContent>
             {submitted ? (
@@ -201,7 +192,7 @@ export default function SuggestionsPage() {
                     </div>
                     <div>
                       <h4 className="font-medium text-white">Mobile App</h4>
-                      <p className="text-white/70 text-sm">Create a mobile app version of JadeVerse</p>
+                      <p className="text-white/70 text-sm">Create a mobile app version of s0lara</p>
                     </div>
                   </div>
                 </li>
@@ -243,7 +234,7 @@ export default function SuggestionsPage() {
                       <Check className="h-4 w-4 text-green-500" />
                     </div>
                     <div>
-                      <h4 className="font-medium text-white">JadeAI Assistant</h4>
+                      <h4 className="font-medium text-white">s0lara AI Assistant</h4>
                       <p className="text-white/70 text-sm">Added AI assistant for homework help</p>
                     </div>
                   </div>

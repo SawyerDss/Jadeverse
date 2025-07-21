@@ -14,7 +14,7 @@ export default function AboutPage() {
           </div>
 
           <h1 className="text-4xl md:text-6xl font-bold text-white mb-4">
-            About <AnimatedText text="JadeVerse" className="text-gradient" />
+            About <AnimatedText text="s0lara" className="text-gradient" />
           </h1>
 
           <p className="text-white/80 text-xl max-w-2xl mx-auto">
@@ -29,7 +29,7 @@ export default function AboutPage() {
               Our Vision
             </h2>
             <p className="text-white/80 text-lg mb-4">
-              JadeVerse was created with a simple yet ambitious vision: to build a gaming platform that combines
+              s0lara was created with a simple yet ambitious vision: to build a gaming platform that combines
               cutting-edge technology with stunning aesthetics to deliver unforgettable gaming experiences.
             </p>
             <p className="text-white/80 text-lg">
@@ -96,12 +96,12 @@ export default function AboutPage() {
               Our Technology
             </h2>
             <p className="text-white/80 text-lg mb-4">
-              JadeVerse is built using cutting-edge web technologies to ensure a smooth, responsive, and visually
-              stunning experience. Our platform leverages the latest advancements in web development to create immersive
-              gaming environments.
+              s0lara is built using cutting-edge web technologies to ensure a smooth, responsive, and visually stunning
+              experience. Our platform leverages the latest advancements in web development to create immersive gaming
+              environments.
             </p>
             <p className="text-white/80 text-lg">
-              From real-time animations to interactive elements, we've crafted every aspect of JadeVerse to deliver a
+              From real-time animations to interactive elements, we've crafted every aspect of s0lara to deliver a
               next-generation gaming platform that pushes the boundaries of what's possible on the web.
             </p>
           </section>
@@ -109,8 +109,8 @@ export default function AboutPage() {
           <section className="text-center">
             <h2 className="text-3xl font-bold text-white mb-6">Join Us Today</h2>
             <p className="text-white/80 text-lg mb-8 max-w-2xl mx-auto">
-              Become part of the JadeVerse community and embark on an unforgettable gaming journey. Create an account to
-              access all our features and start playing right away. Jadeverse was developed by Sawyer
+              Become part of the s0lara community and embark on an unforgettable gaming journey. Create an account to
+              access all our features and start playing right away. s0lara was developed by Sawyer
             </p>
             <div className="relative inline-block">
               <div className="absolute -inset-1 bg-jade-500/30 blur-xl rounded-full"></div>
@@ -119,7 +119,7 @@ export default function AboutPage() {
                 className="relative inline-flex items-center justify-center px-8 py-4 text-lg font-medium text-white bg-gradient-to-r from-jade-600 to-emerald-500 rounded-full hover:from-jade-500 hover:to-emerald-400 transition-all duration-300 shadow-lg hover:shadow-jade-500/50"
               >
                 <Rocket className="mr-2 h-5 w-5" />
-                Join JadeVerse
+                Join s0lara
               </a>
             </div>
           </section>

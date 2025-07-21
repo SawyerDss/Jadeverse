@@ -3,7 +3,6 @@
 import type React from "react"
 
 import { createContext, useContext, useEffect, useState } from "react"
-import { NotificationContext } from "@/lib/notification-context"
 
 type Theme = "jade" | "blue" | "purple" | "red" | "orange" | "rainbow" | "custom" | "neon"
 
@@ -62,8 +61,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("jade")
   const [customColors, setCustomColors] = useState<CustomColors | null>(null)
   const [customEffects, setCustomEffects] = useState<CustomEffects | null>(null)
-  const notificationContext = useContext(NotificationContext)
-  const addNotification = notificationContext?.addNotification || (() => {})
 
   // Load theme from localStorage on initial load
   useEffect(() => {
@@ -209,14 +206,6 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       localStorage.setItem("custom-effects", JSON.stringify(effects))
       applyCustomEffects(effects)
     }
-
-    // Show notification
-    addNotification({
-      title: "Theme Changed",
-      message: `Theme has been updated to ${newTheme.charAt(0).toUpperCase() + newTheme.slice(1)}`,
-      type: "success",
-      duration: 3000,
-    })
   }
 
   return (

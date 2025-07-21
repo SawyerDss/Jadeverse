@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useEffect } from "react"
 import {
   Settings,
   EyeOff,
@@ -31,45 +31,7 @@ export default function SettingsPage() {
   const { user } = useAuth()
   const router = useRouter()
   const { theme, setTheme } = useTheme()
-  const { experimentalFeatures, toggleFeature } = useSettings()
-
-  const [settings, setSettings] = useState({
-    darkMode: true,
-    animations: true,
-    highContrast: false,
-    reducedMotion: false,
-    aboutBlankCloaking: false,
-    autoTabCloaking: false,
-    mouseTrail: false,
-    buttonEffects: true,
-    snowEffect: false,
-    matrixEffect: false,
-    tabTitle: document.title,
-    tabIcon: "/favicon.ico",
-    panicKey: "Escape",
-  })
-
-  // Load settings from localStorage
-  useEffect(() => {
-    const savedSettings = localStorage.getItem("user-settings")
-    if (savedSettings) {
-      setSettings(JSON.parse(savedSettings))
-
-      // Apply animations setting
-      if (JSON.parse(savedSettings).reducedMotion) {
-        document.documentElement.classList.add("reduced-motion")
-      } else {
-        document.documentElement.classList.remove("reduced-motion")
-      }
-
-      // Apply high contrast setting
-      if (JSON.parse(savedSettings).highContrast) {
-        document.documentElement.classList.add("high-contrast")
-      } else {
-        document.documentElement.classList.remove("high-contrast")
-      }
-    }
-  }, [])
+  const { settings, updateSettings, resetSettings, isFeatureEnabled } = useSettings()
 
   // Set up panic key listener
   useEffect(() => {
@@ -98,43 +60,8 @@ export default function SettingsPage() {
     }
   }, [settings.autoTabCloaking]) // Only run when the setting changes
 
-  // Save settings to localStorage
-  const updateSetting = (key: string, value: any) => {
-    const newSettings = { ...settings, [key]: value }
-    setSettings(newSettings)
-    localStorage.setItem("user-settings", JSON.stringify(newSettings))
-
-    // Apply animation settings immediately
-    if (key === "reducedMotion") {
-      if (value) {
-        document.documentElement.classList.add("reduced-motion")
-      } else {
-        document.documentElement.classList.remove("reduced-motion")
-      }
-    }
-
-    // Apply high contrast settings immediately
-    if (key === "highContrast") {
-      if (value) {
-        document.documentElement.classList.add("high-contrast")
-      } else {
-        document.documentElement.classList.remove("high-contrast")
-      }
-    }
-
-    // Apply mouse trail setting
-    if (key === "mouseTrail") {
-      localStorage.setItem("mouseTrail", String(value))
-    }
-
-    // Apply button effects setting
-    if (key === "buttonEffects") {
-      localStorage.setItem("buttonEffects", String(value))
-    }
-  }
-
   const enableAboutBlankCloaking = () => {
-    updateSetting("aboutBlankCloaking", true)
+    updateSettings({ aboutBlankCloaking: true })
 
     // Open in about:blank
     const url = window.location.href
@@ -171,10 +98,13 @@ export default function SettingsPage() {
         </div>
 
         <Tabs defaultValue="appearance">
-          <TabsList className="grid grid-cols-3 mb-6">
+          <TabsList className="grid grid-cols-4 mb-6">
+            {" "}
+            {/* Changed to grid-cols-4 */}
             <TabsTrigger value="appearance">Appearance</TabsTrigger>
             <TabsTrigger value="privacy">Privacy</TabsTrigger>
             <TabsTrigger value="experimental">Experimental</TabsTrigger>
+            <TabsTrigger value="account">Account</TabsTrigger>
           </TabsList>
 
           <TabsContent value="appearance" className="space-y-6">
@@ -193,7 +123,7 @@ export default function SettingsPage() {
             <Card className="glass border-primary/20">
               <CardHeader>
                 <CardTitle className="text-xl text-white">Tab Cloaking</CardTitle>
-                <CardDescription>Customize how JadeVerse appears in your browser</CardDescription>
+                <CardDescription>Customize how s0lara appears in your browser</CardDescription>
               </CardHeader>
               <CardContent className="space-y-4">
                 <div className="space-y-2">
@@ -201,7 +131,7 @@ export default function SettingsPage() {
                   <Input
                     id="tab-title"
                     value={settings.tabTitle}
-                    onChange={(e) => updateSetting("tabTitle", e.target.value)}
+                    onChange={(e) => updateSettings({ tabTitle: e.target.value })}
                     placeholder="Enter custom tab title"
                     className="bg-black/50 border-primary/30 focus:border-primary"
                   />
@@ -212,7 +142,7 @@ export default function SettingsPage() {
                   <Input
                     id="tab-icon"
                     value={settings.tabIcon}
-                    onChange={(e) => updateSetting("tabIcon", e.target.value)}
+                    onChange={(e) => updateSettings({ tabIcon: e.target.value })}
                     placeholder="https://example.com/favicon.ico"
                     className="bg-black/50 border-primary/30 focus:border-primary"
                   />
@@ -231,14 +161,14 @@ export default function SettingsPage() {
                       if (checked) {
                         enableAboutBlankCloaking()
                       } else {
-                        updateSetting("aboutBlankCloaking", false)
+                        updateSettings({ aboutBlankCloaking: false })
                       }
                     }}
                     className="data-[state=checked]:bg-primary"
                   />
                 </div>
                 <p className="text-white/50 text-xs">
-                  Opens JadeVerse in an about:blank page to hide the website URL. This can be useful for privacy or
+                  Opens s0lara in an about:blank page to hide the website URL. This can be useful for privacy or
                   accessing the site in restricted environments.
                 </p>
 
@@ -250,12 +180,12 @@ export default function SettingsPage() {
                   <Switch
                     id="auto-tab-cloaking"
                     checked={settings.autoTabCloaking}
-                    onCheckedChange={(checked) => updateSetting("autoTabCloaking", checked)}
+                    onCheckedChange={(checked) => updateSettings({ autoTabCloaking: checked })}
                     className="data-[state=checked]:bg-primary"
                   />
                 </div>
                 <p className="text-white/50 text-xs">
-                  Automatically opens JadeVerse in an about:blank page every time you visit. This hides the website URL
+                  Automatically opens s0lara in an about:blank page every time you visit. This hides the website URL
                   completely.
                 </p>
 
@@ -278,7 +208,7 @@ export default function SettingsPage() {
               <CardContent className="space-y-4">
                 <div className="space-y-2">
                   <Label htmlFor="panic-key">Panic Key</Label>
-                  <Select value={settings.panicKey} onValueChange={(value) => updateSetting("panicKey", value)}>
+                  <Select value={settings.panicKey} onValueChange={(value) => updateSettings({ panicKey: value })}>
                     <SelectTrigger className="bg-black/50 border-primary/30 focus:border-primary">
                       <SelectValue placeholder="Select a key" />
                     </SelectTrigger>
@@ -333,8 +263,8 @@ export default function SettingsPage() {
                   </div>
                   <Switch
                     id="show-movies"
-                    checked={experimentalFeatures.showMovies}
-                    onCheckedChange={() => toggleFeature("showMovies")}
+                    checked={settings.showMovies}
+                    onCheckedChange={(checked) => updateSettings({ showMovies: checked })}
                     className="data-[state=checked]:bg-primary"
                   />
                 </div>
@@ -347,8 +277,8 @@ export default function SettingsPage() {
                   </div>
                   <Switch
                     id="show-jade-ai"
-                    checked={experimentalFeatures.showJadeAI}
-                    onCheckedChange={() => toggleFeature("showJadeAI")}
+                    checked={settings.showJadeAI}
+                    onCheckedChange={(checked) => updateSettings({ showJadeAI: checked })}
                     className="data-[state=checked]:bg-primary"
                   />
                 </div>
@@ -363,8 +293,8 @@ export default function SettingsPage() {
                   </div>
                   <Switch
                     id="show-exploits"
-                    checked={experimentalFeatures.showExploits}
-                    onCheckedChange={() => toggleFeature("showExploits")}
+                    checked={settings.showExploits}
+                    onCheckedChange={(checked) => updateSettings({ showExploits: checked })}
                     className="data-[state=checked]:bg-primary"
                   />
                 </div>
@@ -377,8 +307,8 @@ export default function SettingsPage() {
                   </div>
                   <Switch
                     id="show-downloads"
-                    checked={experimentalFeatures.showDownloads}
-                    onCheckedChange={() => toggleFeature("showDownloads")}
+                    checked={settings.showDownloads}
+                    onCheckedChange={(checked) => updateSettings({ showDownloads: checked })}
                     className="data-[state=checked]:bg-primary"
                   />
                 </div>
@@ -391,12 +321,12 @@ export default function SettingsPage() {
                   </div>
                   <Switch
                     id="show-browser"
-                    checked={experimentalFeatures.showBrowser}
-                    onCheckedChange={() => toggleFeature("showBrowser")}
+                    checked={settings.showBrowser}
+                    onCheckedChange={(checked) => updateSettings({ showBrowser: checked })}
                     className="data-[state=checked]:bg-primary"
                   />
                 </div>
-                <p className="text-white/50 text-xs">Enable the Browser tool to browse the web within JadeVerse.</p>
+                <p className="text-white/50 text-xs">Enable the Browser tool to browse the web within s0lara.</p>
 
                 <div className="flex items-center justify-between mt-4">
                   <div className="flex items-center space-x-2">
@@ -405,8 +335,8 @@ export default function SettingsPage() {
                   </div>
                   <Switch
                     id="show-proxy"
-                    checked={experimentalFeatures.showProxy}
-                    onCheckedChange={() => toggleFeature("showProxy")}
+                    checked={settings.showProxy}
+                    onCheckedChange={(checked) => updateSettings({ showProxy: checked })}
                     className="data-[state=checked]:bg-primary"
                   />
                 </div>
@@ -416,25 +346,7 @@ export default function SettingsPage() {
                   <GlowingButton
                     className="w-full"
                     onClick={() => {
-                      // Reset all experimental features to default
-                      const defaultFeatures = {
-                        showMovies: true,
-                        showExploits: true,
-                        showDownloads: true,
-                        showBrowser: true,
-                        showProxy: true,
-                        showJadeAI: false,
-                        enableMouseTrail: false,
-                      }
-
-                      // Update each feature to match defaults
-                      Object.keys(defaultFeatures).forEach((key) => {
-                        const feature = key as keyof typeof defaultFeatures
-                        if (experimentalFeatures[feature] !== defaultFeatures[feature]) {
-                          toggleFeature(feature)
-                        }
-                      })
-
+                      resetSettings()
                       alert("All experimental features have been reset to their default values.")
                     }}
                   >
@@ -443,6 +355,37 @@ export default function SettingsPage() {
                 </div>
               </CardContent>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="account">
+            {user ? (
+              <Card className="glass border-primary/20">
+                <CardHeader>
+                  <CardTitle className="text-xl text-white">Account</CardTitle>
+                  <CardDescription>Manage your account settings</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <div className="space-y-1">
+                    <p className="text-sm text-white/70">Signed in as:</p>
+                    <p className="text-white font-medium">{user.username}</p>
+                    <p className="text-white/70 text-sm">{user.email}</p>
+                  </div>
+                </CardContent>
+              </Card>
+            ) : (
+              <Card className="glass border-primary/20">
+                <CardHeader>
+                  <CardTitle className="text-xl text-white">Account</CardTitle>
+                  <CardDescription>You are not signed in</CardDescription>
+                </CardHeader>
+                <CardContent>
+                  <p className="text-white/70 mb-4">Sign in to access all features of s0lara</p>
+                  <GlowingButton className="w-full" onClick={() => router.push("/login")}>
+                    Sign In
+                  </GlowingButton>
+                </CardContent>
+              </Card>
+            )}
           </TabsContent>
         </Tabs>
       </div>

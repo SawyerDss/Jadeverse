@@ -36,7 +36,7 @@ import { useSettings } from "@/lib/settings-context"
 export default function Sidebar() {
   const pathname = usePathname()
   const { user, signOut } = useAuth()
-  const { isFeatureEnabled } = useSettings()
+  const { settings, isFeatureEnabled } = useSettings() // Use settings from context
   const [collapsed, setCollapsed] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     main: true,
@@ -133,8 +133,8 @@ export default function Sidebar() {
       ...(isFeatureEnabled("showProxy") ? [{ href: "/proxy", icon: Shield, label: "Proxy" }] : []),
     ],
     other: [
-      { href: "/about", icon: Info, label: "About" },
-      { href: "/suggestions", icon: Lightbulb, label: "Suggestions" },
+      ...(isFeatureEnabled("showAbout") ? [{ href: "/about", icon: Info, label: "About" }] : []),
+      ...(isFeatureEnabled("showSuggestions") ? [{ href: "/suggestions", icon: Lightbulb, label: "Suggestions" }] : []),
       { href: "/credits", icon: Coffee, label: "Credits" },
     ],
   }
@@ -206,10 +206,10 @@ export default function Sidebar() {
         ) : (
           <div className="flex items-center">
             <Rocket className="h-6 w-6 mr-2 animate-pulse" />
-            <AnimatedText text="JadeVerse" className="font-bold" />
+            <AnimatedText text="s0lara" className="font-bold" />
           </div>
         )}
-        <span className="sr-only">JadeVerse</span>
+        <span className="sr-only">s0lara</span>
 
         {/* Glow effect */}
         <div className="absolute inset-0 rounded-lg bg-primary/20 blur-sm group-hover:bg-primary/30 group-hover:blur-md transition-all duration-300"></div>

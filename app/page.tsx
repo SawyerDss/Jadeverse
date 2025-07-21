@@ -54,8 +54,8 @@ export default function Home() {
         <div className="mb-16 mt-8 text-center">
           <div className="animated-title-container">
             <h1 className="mega-title">
-              <span className="jade-mega-text">JADE</span>
-              <span className="verse-mega-text">VERSE</span>
+              <span className="jade-mega-text">s0l</span>
+              <span className="verse-mega-text">ara</span>
             </h1>
             <div className="jade-text-glow w-64 h-1 mx-auto mt-4 rounded-full"></div>
           </div>

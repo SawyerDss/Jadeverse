@@ -18,7 +18,7 @@ export default function CreditsPage() {
 
         <Card className="glass border-primary/20 mb-8">
           <CardHeader>
-            <CardTitle className="text-2xl text-white">JadeVerse</CardTitle>
+            <CardTitle className="text-2xl text-white">s0lara</CardTitle>
             <CardDescription>The Ultimate Gaming Experience</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
@@ -30,7 +30,7 @@ export default function CreditsPage() {
             </div>
 
             <p className="text-white/80 text-center">
-              JadeVerse is a modern gaming platform designed to provide users with a seamless and immersive gaming
+              s0lara is a modern gaming platform designed to provide users with a seamless and immersive gaming
               experience.
             </p>
 
@@ -83,18 +83,18 @@ export default function CreditsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-white/80">
-              Special thanks to all the contributors and users who have helped make JadeVerse better.
+              Special thanks to all the contributors and users who have helped make s0lara better.
             </p>
 
             <div className="flex flex-wrap gap-2 mt-4">
               <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="border-primary/30 text-white hover:bg-primary/10">
+                <Button variant="outline" className="border-primary/30 text-white hover:bg-primary/10 bg-transparent">
                   <Github className="h-4 w-4 mr-2" />
                   GitHub
                 </Button>
               </Link>
               <Link href="https://vercel.com" target="_blank" rel="noopener noreferrer">
-                <Button variant="outline" className="border-primary/30 text-white hover:bg-primary/10">
+                <Button variant="outline" className="border-primary/30 text-white hover:bg-primary/10 bg-transparent">
                   <ExternalLink className="h-4 w-4 mr-2" />
                   Vercel
                 </Button>
