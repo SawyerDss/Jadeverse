@@ -42,8 +42,8 @@ export default function ClientRootLayout({ children }: { children: React.ReactNo
     <html lang="en">
       <body className={inter.className}>
         <ThemeProvider>
-          <SettingsProvider>
-            <NotificationProvider>
+          <NotificationProvider>
+            <SettingsProvider>
               <AuthProvider>
                 <GamesProvider>
                   <MoviesProvider>
@@ -68,8 +68,8 @@ export default function ClientRootLayout({ children }: { children: React.ReactNo
                   </MoviesProvider>
                 </GamesProvider>
               </AuthProvider>
-            </NotificationProvider>
-          </SettingsProvider>
+            </SettingsProvider>
+          </NotificationProvider>
         </ThemeProvider>
       </body>
     </html>

@@ -1,197 +1,145 @@
 "use client"
 
 import { createContext, useContext, useState, useEffect, type ReactNode } from "react"
+import { useNotification } from "./notification-context"
 
-interface Settings {
-  // Display Settings
-  theme: string
-  primaryColor: string
-  secondaryColor: string
-  accentColor: string
-  backgroundColor: string
-  textColor: string
-  borderColor: string
-  glowIntensity: number
-  animationSpeed: number
-  particleCount: number
-  showParticles: boolean
-  showGlow: boolean
-  showAnimations: boolean
-  showSoundEffects: boolean
-  backgroundMusic: boolean
+export interface Settings {
+  // General settings
+  soundEffects: boolean
+  notifications: boolean
+  animatedBackground: boolean
 
-  // Privacy Settings
-  analytics: boolean
-  cookies: boolean
-  dataCollection: boolean
-  autoTabCloaking: boolean
-  tabTitle: string
-  tabIcon: string
-  panicKey: string
+  // Appearance settings
+  bloomIntensity: number
+  textBloom: boolean
+  neonGlow: boolean
+  particleEffects: boolean
 
-  // Feature Flags
-  showExploits: boolean
-  showDownloads: boolean
-  showBrowser: boolean
-  showProxy: boolean
+  // Feature visibility
   showMovies: boolean
   showJadeAI: boolean
+  showBrowser: boolean
+  showProxy: boolean
+  showExploits: boolean
+  showDownloads: boolean
   showAbout: boolean
   showSuggestions: boolean
 
-  // Accessibility
-  highContrast: boolean
-  reducedMotion: boolean
-  fontSize: number
-
-  // Performance
-  enableHardwareAcceleration: boolean
-  maxFPS: number
-
-  // Experimental Features
-  betaFeatures: boolean
-  experimentalUI: boolean
-}
-
-const defaultSettings: Settings = {
-  // Display Settings
-  theme: "neon",
-  primaryColor: "#10b981",
-  secondaryColor: "#059669",
-  accentColor: "#34d399",
-  backgroundColor: "#000000",
-  textColor: "#ffffff",
-  borderColor: "#10b981",
-  glowIntensity: 50,
-  animationSpeed: 50,
-  particleCount: 50,
-  showParticles: true,
-  showGlow: true,
-  showAnimations: true,
-  showSoundEffects: true,
-  backgroundMusic: false,
-
-  // Privacy Settings
-  analytics: false,
-  cookies: true,
-  dataCollection: false,
-  autoTabCloaking: false,
-  tabTitle: "s0lara - The Ultimate Gaming Experience",
-  tabIcon: "/favicon.ico",
-  panicKey: "Escape",
-
-  // Feature Flags
-  showExploits: false, // Hidden by default
-  showDownloads: false, // Hidden by default
-  showBrowser: false, // Hidden by default
-  showProxy: false, // Hidden by default
-  showMovies: false, // Hidden by default
-  showJadeAI: false, // Experimental feature, hidden by default
-  showAbout: false,
-  showSuggestions: false,
-
-  // Accessibility
-  highContrast: false,
-  reducedMotion: false,
-  fontSize: 16,
-
-  // Performance
-  enableHardwareAcceleration: true,
-  maxFPS: 60,
-
-  // Experimental Features
-  betaFeatures: false,
-  experimentalUI: false,
+  // Privacy settings
+  tabTitle: string
+  tabIcon: string
+  aboutBlankCloaking: boolean
+  autoTabCloaking: boolean
+  panicKey: string
 }
 
 interface SettingsContextType {
   settings: Settings
   updateSettings: (newSettings: Partial<Settings>) => void
   resetSettings: () => void
-  exportSettings: () => string
-  importSettings: (settingsJson: string) => boolean
   isFeatureEnabled: (feature: keyof Settings) => boolean
+}
+
+const defaultSettings: Settings = {
+  // General settings
+  soundEffects: true,
+  notifications: true,
+  animatedBackground: true,
+
+  // Appearance settings
+  bloomIntensity: 0.5,
+  textBloom: true,
+  neonGlow: true,
+  particleEffects: true,
+
+  // Feature visibility - showJadeAI is now enabled by default
+  showMovies: true,
+  showJadeAI: true, // Changed to true
+  showBrowser: true,
+  showProxy: true,
+  showExploits: false, // Keep disabled by default
+  showDownloads: false, // Keep disabled by default
+  showAbout: true,
+  showSuggestions: true,
+
+  // Privacy settings
+  tabTitle: "s0lara",
+  tabIcon: "",
+  aboutBlankCloaking: false,
+  autoTabCloaking: false,
+  panicKey: "Escape",
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
 
 export function SettingsProvider({ children }: { children: ReactNode }) {
   const [settings, setSettings] = useState<Settings>(defaultSettings)
-  const [isInitialized, setIsInitialized] = useState(false)
+  const { addNotification } = useNotification()
 
   // Load settings from localStorage on mount
   useEffect(() => {
     try {
-      const savedSettings = localStorage.getItem("s0lara-settings") // Updated key
+      const savedSettings = localStorage.getItem("s0lara-settings")
       if (savedSettings) {
         const parsed = JSON.parse(savedSettings)
-        // Merge with default settings to ensure all properties exist
-        setSettings((prev) => ({ ...defaultSettings, ...prev, ...parsed }))
+        setSettings({ ...defaultSettings, ...parsed })
       }
     } catch (error) {
       console.error("Failed to load settings:", error)
-    } finally {
-      setIsInitialized(true)
+      addNotification({
+        id: "settings-load-error",
+        title: "Settings Error",
+        message: "Failed to load saved settings. Using defaults.",
+        type: "error",
+      })
     }
-  }, [])
+  }, [addNotification])
 
   // Save settings to localStorage whenever they change
   useEffect(() => {
-    if (isInitialized) {
-      try {
-        localStorage.setItem("s0lara-settings", JSON.stringify(settings)) // Updated key
-      } catch (error) {
-        console.error("Failed to save settings:", error)
-      }
+    try {
+      localStorage.setItem("s0lara-settings", JSON.stringify(settings))
+    } catch (error) {
+      console.error("Failed to save settings:", error)
+      addNotification({
+        id: "settings-save-error",
+        title: "Settings Error",
+        message: "Failed to save settings.",
+        type: "error",
+      })
     }
-  }, [settings, isInitialized])
+  }, [settings, addNotification])
 
   const updateSettings = (newSettings: Partial<Settings>) => {
     setSettings((prev) => ({ ...prev, ...newSettings }))
+    addNotification({
+      id: "settings-updated",
+      title: "Settings Updated",
+      message: "Your settings have been saved.",
+      type: "success",
+      duration: 2000,
+    })
   }
 
   const resetSettings = () => {
     setSettings(defaultSettings)
-    try {
-      localStorage.removeItem("s0lara-settings") // Updated key
-    } catch (error) {
-      console.error("Failed to reset settings:", error)
-    }
-  }
-
-  const exportSettings = () => {
-    return JSON.stringify(settings, null, 2)
-  }
-
-  const importSettings = (settingsJson: string): boolean => {
-    try {
-      const parsed = JSON.parse(settingsJson)
-      // Validate that it's a valid settings object
-      if (typeof parsed === "object" && parsed !== null) {
-        setSettings({ ...defaultSettings, ...parsed })
-        return true
-      }
-      return false
-    } catch (error) {
-      console.error("Failed to import settings:", error)
-      return false
-    }
+    addNotification({
+      id: "settings-reset",
+      title: "Settings Reset",
+      message: "All settings have been reset to defaults.",
+      type: "info",
+    })
   }
 
   const isFeatureEnabled = (feature: keyof Settings): boolean => {
     return Boolean(settings[feature])
   }
 
-  const value: SettingsContextType = {
-    settings,
-    updateSettings,
-    resetSettings,
-    exportSettings,
-    importSettings,
-    isFeatureEnabled,
-  }
-
-  return <SettingsContext.Provider value={value}>{children}</SettingsContext.Provider>
+  return (
+    <SettingsContext.Provider value={{ settings, updateSettings, resetSettings, isFeatureEnabled }}>
+      {children}
+    </SettingsContext.Provider>
+  )
 }
 
 export function useSettings() {

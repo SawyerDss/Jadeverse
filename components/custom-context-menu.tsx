@@ -86,7 +86,7 @@ export default function CustomContextMenu() {
       style={{ top: `${position.y}px`, left: `${position.x}px` }}
     >
       <div className="py-1">
-        <div className="px-3 py-2 text-xs font-semibold text-white/80 border-b border-primary/30">JadeVerse</div>
+        <div className="px-3 py-2 text-xs font-semibold text-white/80 border-b border-primary/30">s0lara</div>
 
         <button
           className="w-full text-left px-3 py-2 text-white hover:bg-primary/10 flex items-center"
@@ -114,10 +114,10 @@ export default function CustomContextMenu() {
 
         <button
           className="w-full text-left px-3 py-2 text-white hover:bg-primary/10 flex items-center"
-          onClick={() => handleMenuItemClick(() => router.push("/ai-assistant"))}
+          onClick={() => handleMenuItemClick(() => router.push("/jade-ai"))}
         >
           <Robot className="h-4 w-4 mr-2" />
-          AI Assistant
+          s0lara AI
         </button>
 
         {user && (

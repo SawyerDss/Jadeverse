@@ -1,19 +1,7 @@
 "use client"
 
 import { useEffect } from "react"
-import {
-  Settings,
-  EyeOff,
-  Palette,
-  AlertTriangle,
-  Beaker,
-  Film,
-  Code,
-  Download,
-  Globe,
-  Shield,
-  BotIcon as Robot,
-} from "lucide-react"
+import { Settings, EyeOff, Palette, AlertTriangle } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
@@ -98,12 +86,9 @@ export default function SettingsPage() {
         </div>
 
         <Tabs defaultValue="appearance">
-          <TabsList className="grid grid-cols-4 mb-6">
-            {" "}
-            {/* Changed to grid-cols-4 */}
+          <TabsList className="grid grid-cols-3 mb-6">
             <TabsTrigger value="appearance">Appearance</TabsTrigger>
             <TabsTrigger value="privacy">Privacy</TabsTrigger>
-            <TabsTrigger value="experimental">Experimental</TabsTrigger>
             <TabsTrigger value="account">Account</TabsTrigger>
           </TabsList>
 
@@ -234,123 +219,6 @@ export default function SettingsPage() {
                 <div className="pt-4">
                   <GlowingButton className="w-full" onClick={testPanicButton}>
                     Test Panic Button
-                  </GlowingButton>
-                </div>
-              </CardContent>
-            </Card>
-          </TabsContent>
-
-          <TabsContent value="experimental" className="space-y-6">
-            <Card className="glass border-primary/20">
-              <CardHeader>
-                <CardTitle className="text-xl text-white flex items-center">
-                  <Beaker className="h-5 w-5 text-amber-400 mr-2" />
-                  Experimental Features
-                </CardTitle>
-                <CardDescription>Enable or disable experimental features</CardDescription>
-              </CardHeader>
-              <CardContent className="space-y-4">
-                <div className="p-3 bg-amber-500/10 border border-amber-500/30 rounded-md mb-4">
-                  <p className="text-amber-400 text-sm">
-                    Warning: These features are experimental and may not work as expected. Enable at your own risk.
-                  </p>
-                </div>
-
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center space-x-2">
-                    <Film className="h-5 w-5 text-primary" />
-                    <Label htmlFor="show-movies">Entertainment Section</Label>
-                  </div>
-                  <Switch
-                    id="show-movies"
-                    checked={settings.showMovies}
-                    onCheckedChange={(checked) => updateSettings({ showMovies: checked })}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-                <p className="text-white/50 text-xs">Enable the Entertainment section to browse movies and shows.</p>
-
-                <div className="flex items-center justify-between mt-4">
-                  <div className="flex items-center space-x-2">
-                    <Robot className="h-5 w-5 text-primary" />
-                    <Label htmlFor="show-jade-ai">JadeAI Assistant</Label>
-                  </div>
-                  <Switch
-                    id="show-jade-ai"
-                    checked={settings.showJadeAI}
-                    onCheckedChange={(checked) => updateSettings({ showJadeAI: checked })}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-                <p className="text-white/50 text-xs">
-                  Enable the JadeAI assistant to help you with questions and tasks.
-                </p>
-
-                <div className="flex items-center justify-between mt-4">
-                  <div className="flex items-center space-x-2">
-                    <Code className="h-5 w-5 text-primary" />
-                    <Label htmlFor="show-exploits">Exploits Section</Label>
-                  </div>
-                  <Switch
-                    id="show-exploits"
-                    checked={settings.showExploits}
-                    onCheckedChange={(checked) => updateSettings({ showExploits: checked })}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-                <p className="text-white/50 text-xs">Enable the Exploits section to access game exploits and cheats.</p>
-
-                <div className="flex items-center justify-between mt-4">
-                  <div className="flex items-center space-x-2">
-                    <Download className="h-5 w-5 text-primary" />
-                    <Label htmlFor="show-downloads">Downloads Section</Label>
-                  </div>
-                  <Switch
-                    id="show-downloads"
-                    checked={settings.showDownloads}
-                    onCheckedChange={(checked) => updateSettings({ showDownloads: checked })}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-                <p className="text-white/50 text-xs">Enable the Downloads section to access downloadable content.</p>
-
-                <div className="flex items-center justify-between mt-4">
-                  <div className="flex items-center space-x-2">
-                    <Globe className="h-5 w-5 text-primary" />
-                    <Label htmlFor="show-browser">Browser Tool</Label>
-                  </div>
-                  <Switch
-                    id="show-browser"
-                    checked={settings.showBrowser}
-                    onCheckedChange={(checked) => updateSettings({ showBrowser: checked })}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-                <p className="text-white/50 text-xs">Enable the Browser tool to browse the web within s0lara.</p>
-
-                <div className="flex items-center justify-between mt-4">
-                  <div className="flex items-center space-x-2">
-                    <Shield className="h-5 w-5 text-primary" />
-                    <Label htmlFor="show-proxy">Proxy Tool</Label>
-                  </div>
-                  <Switch
-                    id="show-proxy"
-                    checked={settings.showProxy}
-                    onCheckedChange={(checked) => updateSettings({ showProxy: checked })}
-                    className="data-[state=checked]:bg-primary"
-                  />
-                </div>
-                <p className="text-white/50 text-xs">Enable the Proxy tool to access blocked websites.</p>
-
-                <div className="pt-4">
-                  <GlowingButton
-                    className="w-full"
-                    onClick={() => {
-                      resetSettings()
-                      alert("All experimental features have been reset to their default values.")
-                    }}
-                  >
-                    Reset to Defaults
                   </GlowingButton>
                 </div>
               </CardContent>

@@ -4,7 +4,6 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   Gamepad2,
-  Rocket,
   Settings,
   LogOut,
   ChevronLeft,
@@ -36,7 +35,7 @@ import { useSettings } from "@/lib/settings-context"
 export default function Sidebar() {
   const pathname = usePathname()
   const { user, signOut } = useAuth()
-  const { settings, isFeatureEnabled } = useSettings() // Use settings from context
+  const { settings, isFeatureEnabled } = useSettings()
   const [collapsed, setCollapsed] = useState(false)
   const [expandedGroups, setExpandedGroups] = useState<Record<string, boolean>>({
     main: true,
@@ -48,7 +47,6 @@ export default function Sidebar() {
   })
   const [isInitialized, setIsInitialized] = useState(false)
 
-  // Load sidebar state from localStorage with error handling
   useEffect(() => {
     try {
       const savedState = localStorage.getItem("sidebar-collapsed")
@@ -65,7 +63,6 @@ export default function Sidebar() {
           }
         } catch (e) {
           console.error("Failed to parse expanded groups:", e)
-          // Reset to default if parsing fails
           localStorage.removeItem("sidebar-expanded-groups")
         }
       }
@@ -76,7 +73,6 @@ export default function Sidebar() {
     }
   }, [])
 
-  // Save sidebar state to localStorage with error handling
   const toggleSidebar = useCallback(() => {
     try {
       const newState = !collapsed
@@ -87,7 +83,6 @@ export default function Sidebar() {
     }
   }, [collapsed])
 
-  // Toggle group expansion with error handling
   const toggleGroup = useCallback(
     (group: string) => {
       try {
@@ -98,7 +93,6 @@ export default function Sidebar() {
         setExpandedGroups(newExpandedGroups)
         localStorage.setItem("sidebar-expanded-groups", JSON.stringify(newExpandedGroups))
 
-        // Add a subtle animation effect
         const groupElement = document.getElementById(`sidebar-group-${group}`)
         if (groupElement) {
           groupElement.classList.add("pulse-animation")
@@ -113,7 +107,6 @@ export default function Sidebar() {
     [expandedGroups],
   )
 
-  // Define navigation groups
   const navGroups = {
     main: [{ href: "/", icon: Home, label: "Home" }],
     content: [
@@ -124,7 +117,7 @@ export default function Sidebar() {
       ...(isFeatureEnabled("showDownloads") ? [{ href: "/downloads", icon: Download, label: "Downloads" }] : []),
     ],
     social: [
-      ...(isFeatureEnabled("showJadeAI") ? [{ href: "/jade-ai", icon: Robot, label: "JadeAI" }] : []),
+      ...(isFeatureEnabled("showJadeAI") ? [{ href: "/jade-ai", icon: Robot, label: "s0lara AI" }] : []),
       { href: "/friends", icon: Users, label: "Friends", requiresAuth: true },
     ],
     shop: [{ href: "/merch", icon: TShirt, label: "Merchandise" }],
@@ -157,7 +150,6 @@ export default function Sidebar() {
     other: Info,
   }
 
-  // Get the active group based on the current path
   const getActiveGroup = useCallback(() => {
     for (const [group, items] of Object.entries(navGroups)) {
       if (items.some((item: any) => item.href === pathname)) {
@@ -169,7 +161,6 @@ export default function Sidebar() {
 
   const activeGroup = getActiveGroup()
 
-  // Only show groups that have items
   const visibleGroups = Object.entries(navGroups).filter(
     ([_, items]) =>
       items.filter(
@@ -178,12 +169,11 @@ export default function Sidebar() {
       ).length > 0,
   )
 
-  // If not initialized yet, show a loading state
   if (!isInitialized) {
     return (
       <div className="fixed left-0 top-0 h-full sidebar z-50 flex flex-col items-center py-6 w-16 border-r border-primary/30 bg-black/40 backdrop-blur-sm shadow-[0_0_15px_rgba(16,185,129,0.15)]">
-        <div className="p-3 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-white mb-8 animate-pulse">
-          <Rocket className="h-6 w-6" />
+        <div className="p-3 rounded-lg mb-8 animate-pulse">
+          <AnimatedText text="s0" className="text-sm font-bold" gradient />
         </div>
       </div>
     )
@@ -199,20 +189,14 @@ export default function Sidebar() {
     >
       <Link
         href="/"
-        className="p-3 rounded-lg bg-gradient-to-r from-primary to-primary/80 text-white mb-8 hover:scale-110 transition-transform duration-300 relative group shadow-lg shadow-primary/20"
+        className="p-3 rounded-lg text-white mb-8 hover:scale-110 transition-transform duration-300 relative group"
       >
         {collapsed ? (
-          <Rocket className="h-6 w-6 animate-pulse" />
+          <AnimatedText text="s0" className="text-sm font-bold" gradient />
         ) : (
-          <div className="flex items-center">
-            <Rocket className="h-6 w-6 mr-2 animate-pulse" />
-            <AnimatedText text="s0lara" className="font-bold" />
-          </div>
+          <AnimatedText text="s0lara" className="text-lg font-bold" gradient />
         )}
         <span className="sr-only">s0lara</span>
-
-        {/* Glow effect */}
-        <div className="absolute inset-0 rounded-lg bg-primary/20 blur-sm group-hover:bg-primary/30 group-hover:blur-md transition-all duration-300"></div>
       </Link>
 
       <nav className="flex flex-col items-center gap-2 w-full overflow-y-auto flex-1 px-3 sidebar-nav">
@@ -220,7 +204,6 @@ export default function Sidebar() {
           const GroupIcon = groupIcons[groupKey as keyof typeof groupIcons]
           const isActiveGroup = activeGroup === groupKey
 
-          // Filter items based on auth and feature requirements
           const visibleItems = items.filter(
             (item: any) =>
               (!item.requiresAuth || user) && (!item.requiresFeature || isFeatureEnabled(item.requiresFeature as any)),
@@ -292,14 +275,12 @@ export default function Sidebar() {
                           <item.icon className={cn("flex-shrink-0", collapsed ? "h-5 w-5" : "h-5 w-5")} />
                           {!collapsed && <span className="ml-3 text-sm">{item.label}</span>}
 
-                          {/* Tooltip only when collapsed */}
                           {collapsed && (
                             <div className="absolute left-full ml-2 px-2 py-1 bg-black/90 border border-primary/40 rounded text-white text-xs whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                               {item.label}
                             </div>
                           )}
 
-                          {/* Active indicator */}
                           {isActive && (
                             <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
                           )}
@@ -313,9 +294,7 @@ export default function Sidebar() {
         })}
       </nav>
 
-      {/* Fixed bottom section with Settings and Sign In/Out */}
       <div className="mt-auto mb-6 w-full px-3 space-y-2 border-t border-primary/20 pt-4">
-        {/* Settings link - always visible */}
         <Link
           href="/settings"
           className={cn(
@@ -329,20 +308,17 @@ export default function Sidebar() {
           <Settings className={cn("flex-shrink-0", collapsed ? "h-5 w-5" : "h-5 w-5")} />
           {!collapsed && <span className="ml-3 text-sm">Settings</span>}
 
-          {/* Tooltip only when collapsed */}
           {collapsed && (
             <div className="absolute left-full ml-2 px-2 py-1 bg-black/90 border border-primary/40 rounded text-white text-xs whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
               Settings
             </div>
           )}
 
-          {/* Active indicator */}
           {pathname === "/settings" && (
             <div className="absolute right-2 w-1.5 h-1.5 rounded-full bg-primary animate-pulse"></div>
           )}
         </Link>
 
-        {/* Profile link - only if logged in */}
         {user && (
           <Link
             href="/profile"
@@ -357,7 +333,6 @@ export default function Sidebar() {
             <User className={cn("flex-shrink-0", collapsed ? "h-5 w-5" : "h-5 w-5")} />
             {!collapsed && <span className="ml-3 text-sm">Profile</span>}
 
-            {/* Tooltip only when collapsed */}
             {collapsed && (
               <div className="absolute left-full ml-2 px-2 py-1 bg-black/90 border border-primary/40 rounded text-white text-xs whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                 Profile
@@ -366,7 +341,6 @@ export default function Sidebar() {
           </Link>
         )}
 
-        {/* Sign In/Out button */}
         {user ? (
           <Button
             variant="ghost"
@@ -380,7 +354,6 @@ export default function Sidebar() {
             <LogOut className="h-5 w-5" />
             {!collapsed && <span className="ml-3 text-sm">Sign Out</span>}
 
-            {/* Tooltip only when collapsed */}
             {collapsed && (
               <div className="absolute left-full ml-2 px-2 py-1 bg-black/90 border border-primary/40 rounded text-white text-xs whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                 Sign Out
@@ -398,7 +371,6 @@ export default function Sidebar() {
             <Users className="h-5 w-5" />
             {!collapsed && <span className="ml-3 text-sm">Sign In</span>}
 
-            {/* Tooltip only when collapsed */}
             {collapsed && (
               <div className="absolute left-full ml-2 px-2 py-1 bg-black/90 border border-primary/40 rounded text-white text-xs whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
                 Sign In
@@ -408,7 +380,6 @@ export default function Sidebar() {
         )}
       </div>
 
-      {/* Toggle button */}
       <button
         onClick={toggleSidebar}
         className="absolute -right-3 top-1/2 transform -translate-y-1/2 w-6 h-12 bg-gradient-to-r from-primary to-primary/80 rounded-full flex items-center justify-center text-white hover:opacity-90 transition-colors duration-300 border border-primary/40 shadow-lg shadow-primary/20 hover:scale-110"

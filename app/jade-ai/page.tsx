@@ -1,275 +1,130 @@
 "use client"
 
-import type React from "react"
-
-import { useState, useRef, useEffect } from "react"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
+import { useChat } from "ai/react"
+import { Send, Bot, User, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
-import { useNotification } from "@/lib/notification-context"
-import { Send, BotIcon as Robot, Sparkles } from "lucide-react"
-import AnimatedText from "@/components/animated-text"
-
-type Message = {
-  id: string
-  content: string
-  sender: "user" | "ai"
-  timestamp: Date
-}
-
-// Sample responses for various topics
-const AI_RESPONSES: Record<string, string[]> = {
-  greeting: [
-    "Hello! I'm JadeAI. How can I assist you today?",
-    "Hi there! Welcome to JadeVerse. What can I help you with?",
-    "Greetings! I'm here to help with your questions. What would you like to know?",
-  ],
-  math: [
-    "To solve this equation, you need to isolate the variable by performing the same operation on both sides.",
-    "When working with quadratic equations, remember the formula: x = (-b ± √(b² - 4ac)) / 2a",
-    "For calculus problems, start by identifying whether you need to use differentiation or integration.",
-    "Remember that the derivative of sin(x) is cos(x), and the derivative of cos(x) is -sin(x).",
-    "When solving probability problems, make sure to identify the total number of possible outcomes first.",
-  ],
-  science: [
-    "The periodic table is organized by atomic number, which is the number of protons in an atom's nucleus.",
-    "Newton's three laws of motion are fundamental principles in physics that describe the relationship between an object and the forces acting upon it.",
-    "In biology, cells are the basic structural and functional units of all living organisms.",
-    "Chemical reactions involve the breaking and forming of bonds between atoms.",
-    "The scientific method is a systematic approach to research that involves observation, hypothesis formation, experimentation, and conclusion.",
-  ],
-  history: [
-    "The Renaissance was a period of European cultural, artistic, political, and scientific rebirth that followed the Middle Ages.",
-    "World War II lasted from 1939 to 1945 and involved many of the world's nations forming two opposing military alliances.",
-    "The Industrial Revolution was a period of major industrialization and innovation that took place during the late 1700s and early 1800s.",
-    "The Civil Rights Movement in the United States was a decades-long struggle to end racial discrimination and segregation.",
-    "Ancient civilizations like Egypt, Greece, and Rome made significant contributions to art, architecture, philosophy, and governance systems.",
-  ],
-  programming: [
-    "In programming, variables are used to store data that can be referenced and manipulated in a computer program.",
-    "Functions allow you to group code that performs a specific task, making your code more organized and reusable.",
-    "Loops are used to execute a block of code multiple times, which is useful for iterating through data.",
-    "Object-oriented programming (OOP) is a programming paradigm based on the concept of 'objects', which can contain data and code.",
-    "Debugging is the process of finding and resolving bugs or defects in a computer program.",
-    "JavaScript is a dynamic programming language that's commonly used for web development.",
-    "Python is known for its readability and versatility, making it popular for beginners and experienced developers alike.",
-  ],
-  games: [
-    "Video games have evolved significantly since the early days of Pong and Space Invaders.",
-    "Game development often involves programming, art design, music composition, and storytelling.",
-    "Many games use physics engines to create realistic movements and interactions.",
-    "Esports has grown into a billion-dollar industry with professional players competing worldwide.",
-    "JadeVerse offers a curated selection of games across different genres for you to enjoy!",
-  ],
-  default: [
-    "I'm here to help! Could you provide more details about what you'd like to know?",
-    "I'd be happy to assist with that. Could you elaborate a bit more?",
-    "Interesting question! Let me help you find the answer to that.",
-    "I'm JadeAI, your assistant in JadeVerse. How can I help you today?",
-  ],
-}
-
-// Helper function to determine the response category based on the query
-function getResponseCategory(query: string): string {
-  const lowerQuery = query.toLowerCase()
-
-  if (lowerQuery.includes("hi") || lowerQuery.includes("hello") || lowerQuery.includes("hey")) {
-    return "greeting"
-  } else if (lowerQuery.includes("math") || lowerQuery.includes("equation") || lowerQuery.includes("calculate")) {
-    return "math"
-  } else if (lowerQuery.includes("science") || lowerQuery.includes("physics") || lowerQuery.includes("biology")) {
-    return "science"
-  } else if (lowerQuery.includes("history") || lowerQuery.includes("war") || lowerQuery.includes("revolution")) {
-    return "history"
-  } else if (
-    lowerQuery.includes("code") ||
-    lowerQuery.includes("programming") ||
-    lowerQuery.includes("javascript") ||
-    lowerQuery.includes("python")
-  ) {
-    return "programming"
-  } else if (lowerQuery.includes("game") || lowerQuery.includes("play") || lowerQuery.includes("gaming")) {
-    return "games"
-  } else {
-    return "default"
-  }
-}
-
-// Get a random response based on the category
-function getRandomResponse(category: string): string {
-  const responses = AI_RESPONSES[category] || AI_RESPONSES.default
-  return responses[Math.floor(Math.random() * responses.length)]
-}
+import { Input } from "@/components/ui/input"
+import { ScrollArea } from "@/components/ui/scroll-area"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { useEffect, useRef } from "react"
 
 export default function JadeAIPage() {
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: "1",
-      content: "Hello! I'm JadeAI, your personal assistant in JadeVerse. How can I help you today?",
-      sender: "ai",
-      timestamp: new Date(),
-    },
-  ])
-  const [input, setInput] = useState("")
-  const [isTyping, setIsTyping] = useState(false)
+  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
+    api: "/api/chat",
+  })
   const messagesEndRef = useRef<HTMLDivElement>(null)
-  const { addNotification } = useNotification()
 
-  // Scroll to bottom when messages change
-  useEffect(() => {
+  const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" })
-  }, [messages])
-
-  const handleSendMessage = (e: React.FormEvent) => {
-    e.preventDefault()
-    if (!input.trim()) return
-
-    // Add user message
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      content: input,
-      sender: "user",
-      timestamp: new Date(),
-    }
-    setMessages((prev) => [...prev, userMessage])
-    setInput("")
-
-    // Simulate AI typing
-    setIsTyping(true)
-
-    // Determine the response category based on user input
-    const category = getResponseCategory(input)
-
-    // Simulate AI response after a delay
-    setTimeout(
-      () => {
-        const aiResponse: Message = {
-          id: (Date.now() + 1).toString(),
-          content: getRandomResponse(category),
-          sender: "ai",
-          timestamp: new Date(),
-        }
-        setMessages((prev) => [...prev, aiResponse])
-        setIsTyping(false)
-
-        // Add notification for new AI response
-        addNotification({
-          title: "JadeAI Response",
-          message: "JadeAI has responded to your message",
-          type: "info",
-          duration: 3000,
-        })
-      },
-      1000 + Math.random() * 2000,
-    )
   }
 
-  // Quick topic buttons
-  const quickTopics = [
-    { name: "Math", query: "Can you help me with math?" },
-    { name: "Science", query: "Tell me something about science" },
-    { name: "History", query: "I'm interested in history" },
-    { name: "Programming", query: "I want to learn programming" },
-    { name: "Games", query: "Tell me about games" },
-  ]
+  useEffect(() => {
+    scrollToBottom()
+  }, [messages])
 
   return (
-    <div className="py-16">
-      <div className="max-w-4xl mx-auto">
-        <div className="flex items-center mb-8">
-          <Robot className="h-8 w-8 text-primary mr-3" />
-          <h1 className="text-3xl md:text-5xl font-bold text-white">
-            <AnimatedText text="JadeAI" className="text-gradient" />
+    <div className="py-8 h-screen flex flex-col">
+      <div className="max-w-4xl mx-auto flex-1 flex flex-col">
+        <div className="mb-6">
+          <h1 className="text-3xl md:text-5xl font-bold text-white text-bloom-primary">
+            <span className="text-gradient">s0lara</span> AI Assistant
           </h1>
+          <p className="text-white/70 text-lg">
+            Your intelligent companion for learning, problem-solving, and creative assistance.
+          </p>
         </div>
 
-        <Card className="glass border-primary/20 h-[600px] flex flex-col">
-          <CardHeader>
-            <CardTitle className="text-xl text-white">Chat with JadeAI</CardTitle>
-            <CardDescription>Your personal AI assistant</CardDescription>
-
-            {/* Quick topic buttons */}
-            <div className="flex flex-wrap gap-2 mt-2">
-              {quickTopics.map((topic) => (
-                <Button
-                  key={topic.name}
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setInput(topic.query)}
-                  className="bg-primary/10 border-primary/30 hover:bg-primary/20"
-                >
-                  <Sparkles className="h-3 w-3 mr-1" />
-                  {topic.name}
-                </Button>
-              ))}
-            </div>
+        <Card className="glass border-primary/20 flex-1 flex flex-col">
+          <CardHeader className="border-b border-primary/20">
+            <CardTitle className="text-white flex items-center">
+              <Bot className="h-5 w-5 mr-2 text-primary" />
+              Chat with s0lara AI
+            </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 overflow-y-auto mb-4">
-            <div className="space-y-4">
-              {messages.map((message) => (
-                <div key={message.id} className={`flex ${message.sender === "user" ? "justify-end" : "justify-start"}`}>
-                  <div
-                    className={`max-w-[80%] rounded-lg p-3 ${
-                      message.sender === "user"
-                        ? "bg-primary/20 border border-primary/30"
-                        : "bg-gray-800/50 border border-gray-700/30"
-                    }`}
-                  >
-                    {message.sender === "ai" && (
-                      <div className="flex items-center mb-1">
-                        <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-2">
-                          <Robot className="h-3 w-3 text-primary" />
-                        </div>
-                        <span className="text-xs font-medium text-primary/80">JadeAI</span>
-                      </div>
-                    )}
-                    <p className="text-white">{message.content}</p>
-                    <p className="text-xs text-white/50 mt-1 text-right">
-                      {message.timestamp.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" })}
+          <CardContent className="flex-1 flex flex-col p-0">
+            <ScrollArea className="flex-1 p-4">
+              <div className="space-y-4">
+                {messages.length === 0 && (
+                  <div className="text-center py-8">
+                    <Bot className="h-12 w-12 text-primary/50 mx-auto mb-4" />
+                    <p className="text-white/70">
+                      Hello! I'm s0lara AI. Ask me anything about math, science, English, or any topic you'd like help
+                      with.
                     </p>
                   </div>
-                </div>
-              ))}
-              {isTyping && (
-                <div className="flex justify-start">
-                  <div className="max-w-[80%] rounded-lg p-3 bg-gray-800/50 border border-gray-700/30">
-                    <div className="flex items-center">
-                      <div className="w-6 h-6 rounded-full bg-primary/20 flex items-center justify-center mr-2">
-                        <Robot className="h-3 w-3 text-primary" />
+                )}
+
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`flex items-start space-x-3 ${
+                      message.role === "user" ? "justify-end" : "justify-start"
+                    }`}
+                  >
+                    {message.role === "assistant" && (
+                      <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                        <Bot className="h-4 w-4 text-primary" />
                       </div>
-                      <span className="text-xs font-medium text-primary/80">JadeAI</span>
+                    )}
+                    <div
+                      className={`max-w-[80%] rounded-lg p-3 ${
+                        message.role === "user" ? "bg-primary/20 text-white ml-auto" : "bg-black/30 text-white/90"
+                      }`}
+                    >
+                      <div className="whitespace-pre-wrap">{message.content}</div>
                     </div>
-                    <div className="flex items-center space-x-1 mt-2">
-                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse"></div>
-                      <div
-                        className="w-2 h-2 rounded-full bg-primary animate-pulse"
-                        style={{ animationDelay: "0.2s" }}
-                      ></div>
-                      <div
-                        className="w-2 h-2 rounded-full bg-primary animate-pulse"
-                        style={{ animationDelay: "0.4s" }}
-                      ></div>
+                    {message.role === "user" && (
+                      <div className="w-8 h-8 rounded-full bg-white/10 flex items-center justify-center flex-shrink-0">
+                        <User className="h-4 w-4 text-white" />
+                      </div>
+                    )}
+                  </div>
+                ))}
+
+                {isLoading && (
+                  <div className="flex items-start space-x-3">
+                    <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center flex-shrink-0">
+                      <Bot className="h-4 w-4 text-primary" />
+                    </div>
+                    <div className="bg-black/30 text-white/90 rounded-lg p-3">
+                      <div className="flex items-center space-x-2">
+                        <Loader2 className="h-4 w-4 animate-spin" />
+                        <span>s0lara AI is thinking...</span>
+                      </div>
                     </div>
                   </div>
-                </div>
-              )}
-              <div ref={messagesEndRef} />
+                )}
+
+                {error && (
+                  <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 text-red-200">
+                    <p className="font-semibold">Error:</p>
+                    <p>{error.message}</p>
+                  </div>
+                )}
+
+                <div ref={messagesEndRef} />
+              </div>
+            </ScrollArea>
+
+            <div className="border-t border-primary/20 p-4">
+              <form onSubmit={handleSubmit} className="flex space-x-2">
+                <Input
+                  value={input}
+                  onChange={handleInputChange}
+                  placeholder="Ask me anything..."
+                  className="flex-1 bg-black/50 border-primary/30 focus:border-primary text-white placeholder-white/50"
+                  disabled={isLoading}
+                />
+                <Button
+                  type="submit"
+                  disabled={isLoading || !input.trim()}
+                  className="bg-primary hover:bg-primary/80 text-white"
+                >
+                  <Send className="h-4 w-4" />
+                </Button>
+              </form>
             </div>
           </CardContent>
-          <div className="p-4 border-t border-primary/20">
-            <form onSubmit={handleSendMessage} className="flex gap-2">
-              <Input
-                value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Ask JadeAI anything..."
-                className="flex-1 bg-black/50 border-primary/30 focus:border-primary"
-              />
-              <Button type="submit" disabled={!input.trim() || isTyping}>
-                <Send className="h-4 w-4" />
-                <span className="sr-only">Send</span>
-              </Button>
-            </form>
-          </div>
         </Card>
       </div>
     </div>
