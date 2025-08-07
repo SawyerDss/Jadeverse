@@ -10,8 +10,11 @@ export async function POST(req: Request) {
       return new Response("API key not configured", { status: 500 })
     }
 
+    // Log the start of the API call
+    console.log("Starting Groq streamText call...")
+
     const result = await streamText({
-      model: groq("llama-3.1-8b-instant"), // Ensure this model is still supported by Groq
+      model: groq("llama-3.1-8b-instant"), // This model is generally very fast
       messages,
       system: `You are s0lara AI, a helpful and knowledgeable assistant created for the s0lara gaming platform. You can help with:
 
@@ -28,6 +31,8 @@ export async function POST(req: Request) {
 Be friendly, clear, and educational in your responses. Always aim to help users learn and understand concepts. Keep your responses concise but informative.`,
     })
 
+    // Log that the streamText call completed and response is being sent
+    console.log("Groq streamText call completed, sending response stream.")
     return result.toTextStreamResponse()
   } catch (error) {
     console.error("Error in chat API:", error)

@@ -44,7 +44,7 @@ export default function JadeAIPage() {
     setError(null)
 
     try {
-      console.log("Sending request to /api/chat with messages:", [...messages, userMessage].map(msg => ({ role: msg.role, content: msg.content })));
+      console.log("Client: Sending request to /api/chat with messages:", [...messages, userMessage].map(msg => ({ role: msg.role, content: msg.content })));
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
@@ -58,10 +58,10 @@ export default function JadeAIPage() {
         }),
       })
 
-      console.log("Response status:", response.status);
+      console.log("Client: Response status:", response.status);
       if (!response.ok) {
         const errorText = await response.text()
-        console.error("API response error text:", errorText);
+        console.error("Client: API response error text:", errorText);
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
       }
 
@@ -77,7 +77,7 @@ export default function JadeAIPage() {
       }
 
       setMessages(prev => [...prev, assistantMessage])
-      console.log("Added initial assistant message.");
+      console.log("Client: Added initial assistant message.");
 
       const decoder = new TextDecoder()
       let done = false
@@ -88,7 +88,7 @@ export default function JadeAIPage() {
 
         if (value) {
           const chunk = decoder.decode(value, { stream: true })
-          console.log("Received chunk:", chunk); // Log each received chunk
+          console.log("Client: Received chunk:", chunk); // Log each received chunk
 
           setMessages(prev => {
             const newMessages = [...prev]
@@ -100,9 +100,9 @@ export default function JadeAIPage() {
           })
         }
       }
-      console.log("Streaming complete.");
+      console.log("Client: Streaming complete.");
     } catch (err) {
-      console.error("Chat error:", err)
+      console.error("Client: Chat error:", err)
       setError(err instanceof Error ? err.message : "An error occurred")
       // Remove the empty assistant message if there was an error
       setMessages(prev => prev.filter(msg => !(msg.role === "assistant" && msg.content === "")))
