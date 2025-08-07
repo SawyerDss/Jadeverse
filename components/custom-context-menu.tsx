@@ -1,19 +1,7 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react"
-import {
-  Home,
-  Gamepad2,
-  Settings,
-  Info,
-  LogOut,
-  LogIn,
-  Copy,
-  RefreshCw,
-  EyeOff,
-  User,
-  BotIcon as Robot,
-} from "lucide-react"
+import { Home, Gamepad2, Settings, Info, LogOut, LogIn, Copy, RefreshCw, EyeOff, User, BotIcon as Robot } from 'lucide-react'
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/lib/auth-context"
 
@@ -106,14 +94,6 @@ export default function CustomContextMenu() {
 
         <button
           className="w-full text-left px-3 py-2 text-white hover:bg-primary/10 flex items-center"
-          onClick={() => handleMenuItemClick(() => router.push("/about"))}
-        >
-          <Info className="h-4 w-4 mr-2" />
-          About
-        </button>
-
-        <button
-          className="w-full text-left px-3 py-2 text-white hover:bg-primary/10 flex items-center"
           onClick={() => handleMenuItemClick(() => router.push("/jade-ai"))}
         >
           <Robot className="h-4 w-4 mr-2" />
@@ -177,7 +157,7 @@ export default function CustomContextMenu() {
         ) : (
           <button
             className="w-full text-left px-3 py-2 text-white hover:bg-primary/10 flex items-center"
-            onClick={() => handleMenuItemClick(() => router.push("/login"))}
+            onClick={() => handleMenuItemClick(() => router.push("/auth"))}
           >
             <LogIn className="h-4 w-4 mr-2" />
             Sign In

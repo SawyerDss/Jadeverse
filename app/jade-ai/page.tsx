@@ -1,17 +1,23 @@
 "use client"
 
-import { useChat } from "ai/react"
-import { Send, Bot, User, Loader2 } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { Send, Bot, User, Loader2 } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { useEffect, useRef } from "react"
+
+interface Message {
+  id: string
+  role: "user" | "assistant"
+  content: string
+}
 
 export default function JadeAIPage() {
-  const { messages, input, handleInputChange, handleSubmit, isLoading, error } = useChat({
-    api: "/api/chat",
-  })
+  const [messages, setMessages] = useState<Message[]>([])
+  const [input, setInput] = useState("")
+  const [isLoading, setIsLoading] = useState(false)
+  const [error, setError] = useState<string | null>(null)
   const messagesEndRef = useRef<HTMLDivElement>(null)
 
   const scrollToBottom = () => {
@@ -22,6 +28,88 @@ export default function JadeAIPage() {
     scrollToBottom()
   }, [messages])
 
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (!input.trim() || isLoading) return
+
+    const userMessage: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content: input.trim()
+    }
+
+    setMessages(prev => [...prev, userMessage])
+    setInput("")
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const response = await fetch("/api/chat", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          messages: [...messages, userMessage].map(msg => ({
+            role: msg.role,
+            content: msg.content
+          }))
+        }),
+      })
+
+      if (!response.ok) {
+        const errorText = await response.text()
+        throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
+      }
+
+      const reader = response.body?.getReader()
+      if (!reader) {
+        throw new Error("No response body")
+      }
+
+      const assistantMessage: Message = {
+        id: (Date.now() + 1).toString(),
+        role: "assistant",
+        content: ""
+      }
+
+      setMessages(prev => [...prev, assistantMessage])
+
+      const decoder = new TextDecoder()
+      let done = false
+
+      while (!done) {
+        const { value, done: readerDone } = await reader.read()
+        done = readerDone
+
+        if (value) {
+          const chunk = decoder.decode(value, { stream: true })
+          
+          // Handle plain text streaming
+          setMessages(prev => {
+            const newMessages = [...prev]
+            const lastMessage = newMessages[newMessages.length - 1]
+            if (lastMessage && lastMessage.role === "assistant") {
+              lastMessage.content += chunk
+            }
+            return newMessages
+          })
+        }
+      }
+    } catch (err) {
+      console.error("Chat error:", err)
+      setError(err instanceof Error ? err.message : "An error occurred")
+      // Remove the empty assistant message if there was an error
+      setMessages(prev => prev.filter(msg => !(msg.role === "assistant" && msg.content === "")))
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setInput(e.target.value)
+  }
+
   return (
     <div className="py-8 h-screen flex flex-col">
       <div className="max-w-4xl mx-auto flex-1 flex flex-col">
@@ -30,7 +118,7 @@ export default function JadeAIPage() {
             <span className="text-gradient">s0lara</span> AI Assistant
           </h1>
           <p className="text-white/70 text-lg">
-            Your intelligent companion for learning, problem-solving, and creative assistance.
+            AI Tool made for s0lara with Grok Ai
           </p>
         </div>
 
@@ -48,8 +136,9 @@ export default function JadeAIPage() {
                   <div className="text-center py-8">
                     <Bot className="h-12 w-12 text-primary/50 mx-auto mb-4" />
                     <p className="text-white/70">
-                      Hello! I'm s0lara AI. Ask me anything about math, science, English, or any topic you'd like help
-                      with.
+                      Cool ai tool thingy
+                      for s0lara
+                      which runs on GROK
                     </p>
                   </div>
                 )}
@@ -98,7 +187,7 @@ export default function JadeAIPage() {
                 {error && (
                   <div className="bg-red-500/20 border border-red-500/50 rounded-lg p-3 text-red-200">
                     <p className="font-semibold">Error:</p>
-                    <p>{error.message}</p>
+                    <p>{error}</p>
                   </div>
                 )}
 

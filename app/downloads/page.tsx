@@ -1,342 +1,310 @@
 "use client"
 
 import { useState } from "react"
-import { Card, CardContent } from "@/components/ui/card"
+import { Download, Search, Filter, Star, Calendar, FileText, Archive, Code, Image, Music, Video } from 'lucide-react'
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import {
-  Search,
-  Filter,
-  Download,
-  FileText,
-  FileCode,
-  FileArchiveIcon as FileZip,
-  Clock,
-  FileArchive,
-  ExternalLink,
-} from "lucide-react"
-import { useNotification } from "@/lib/notification-context"
-import AnimatedText from "@/components/animated-text"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Badge } from "@/components/ui/badge"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-// Update the mockDownloads array to include customizable link property
-const mockDownloads = [
+const downloadItems = [
   {
-    id: "download-1",
-    title: "Eaglercraft",
-    description: "Minecraft",
-    category: "Software",
-    icon: <FileCode className="h-10 w-10 text-primary" />,
-    size: "13.8 MB",
-    version: "1.2.3",
-    date: "5-7-2025",
-    downloads: 1,
-    filename: "Copy of Minecraft (1)",
-    link: "https://drive.google.com/uc?export=download&id=1-ctSrgX29qqOui67551GoThFkwaYPa4S",
+    id: 1,
+    name: "!test! page not ready",
+    description: "67",
+    category: "67",
+    size: "25.4 MB",
+    downloads: 67,
+    rating: 4.8,
+    date: "67",
+    type: "zip",
+    icon: Image,
+    featured: true,
   },
   {
-    id: "download-2",
-    title: "Game Assets Pack",
-    description: "Collection of game assets for developers.",
-    category: "Resources",
-    icon: <FileZip className="h-10 w-10 text-yellow-500" />,
-    size: "156 MB",
-    version: "2.0",
-    date: "2024-01-22",
-    downloads: 3421,
-    filename: "game-assets-pack-v2.zip",
-    link: "https://example.com/downloads/game-assets",
+    id: 2,
+    name: "!test! page not ready",
+    description: "67",
+    category: "Development",
+    size: "156.2 MB",
+    downloads: 67,
+    rating: 4.9,
+    date: "67",
+    type: "zip",
+    icon: Code,
+    featured: true,
   },
   {
-    id: "download-3",
-    title: "JadeVerse Documentation",
-    description: "Complete documentation for JadeVerse API and services.",
+    id: 3,
+    name: "!test! page not ready",
+    description: "67",
+    category: "Audio",
+    size: "78.9 MB",
+    downloads: 67,
+    rating: 4.7,
+    date: "67",
+    type: "zip",
+    icon: Music,
+  },
+  {
+    id: 4,
+    name: "!test! page not ready",
+    description: "7",
+    category: "Development",
+    size: "12.3 MB",
+    downloads: 7,
+    rating: 4.6,
+    date: "67",
+    type: "zip",
+    icon: Code,
+  },
+  {
+    id: 5,
+    name: "!test! page not ready",
+    description: "76",
+    category: "Graphics",
+    size: "34.7 MB",
+    downloads: 76,
+    rating: 4.5,
+    date: "2024-01-03",
+    type: "zip",
+    icon: Video,
+  },
+  {
+    id: 6,
+    name: "!test! page not ready",
+    description: "67",
     category: "Documentation",
-    icon: <FileText className="h-10 w-10 text-blue-500" />,
-    size: "3.2 MB",
-    version: "2024.1",
-    date: "2024-01-05",
-    downloads: 8765,
-    filename: "jadeverse-docs-2024.pdf",
-    link: "https://example.com/downloads/documentation",
-  },
-  {
-    id: "download-4",
-    title: "Game Development Kit",
-    description: "Tools and resources for creating games for JadeVerse.",
-    category: "Software",
-    icon: <FileCode className="h-10 w-10 text-primary" />,
-    size: "78.3 MB",
-    version: "3.1.5",
-    date: "2023-12-10",
-    downloads: 5432,
-    filename: "jadeverse-gdk-3.1.5.zip",
-    link: "https://example.com/downloads/gdk",
-  },
-  {
-    id: "download-5",
-    title: "UI Resource Pack",
-    description: "UI elements and templates for JadeVerse themes.",
-    category: "Resources",
-    icon: <FileZip className="h-10 w-10 text-yellow-500" />,
-    size: "42.7 MB",
-    version: "1.0",
-    date: "2024-02-01",
-    downloads: 2134,
-    filename: "ui-resource-pack-v1.zip",
-    link: "https://example.com/downloads/ui-resources",
-  },
-  {
-    id: "download-6",
-    title: "JadeVerse Mobile App",
-    description: "Android APK for JadeVerse mobile access.",
-    category: "Software",
-    icon: <FileArchive className="h-10 w-10 text-green-500" />,
-    size: "18.9 MB",
-    version: "0.9.2",
-    date: "2024-02-20",
-    downloads: 3245,
-    filename: "jadeverse-mobile-0.9.2.apk",
-    link: "https://example.com/downloads/mobile-app",
+    size: "8.1 MB",
+    downloads: 76,
+    rating: 4.8,
+    date: "76",
+    type: "pdf",
+    icon: FileText,
   },
 ]
 
-const categories = ["All", "Software", "Resources", "Documentation"]
+const categories = ["All", "Graphics", "Development", "Audio", "Documentation"]
+const sortOptions = [
+  { value: "downloads", label: "Most Downloaded" },
+  { value: "rating", label: "Highest Rated" },
+  { value: "date", label: "Newest" },
+  { value: "name", label: "Name" },
+]
 
 export default function DownloadsPage() {
   const [searchTerm, setSearchTerm] = useState("")
   const [selectedCategory, setSelectedCategory] = useState("All")
-  const [filteredDownloads, setFilteredDownloads] = useState(mockDownloads)
-  const [activeTab, setActiveTab] = useState("all")
-  const { addNotification } = useNotification()
+  const [sortBy, setSortBy] = useState("downloads")
 
-  const handleSearch = () => {
-    let results = mockDownloads
-
-    // Filter by search term
-    if (searchTerm) {
-      results = results.filter(
-        (item) =>
-          item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-          item.description.toLowerCase().includes(searchTerm.toLowerCase()),
-      )
-    }
-
-    // Filter by category
-    if (selectedCategory !== "All") {
-      results = results.filter((item) => item.category === selectedCategory)
-    }
-
-    // Filter by tab
-    if (activeTab === "recent") {
-      results = [...results].sort((a, b) => new Date(b.date).getTime() - new Date(a.date).getTime())
-    } else if (activeTab === "popular") {
-      results = [...results].sort((a, b) => b.downloads - a.downloads)
-    }
-
-    setFilteredDownloads(results)
-  }
-
-  const handleDownload = (item: any) => {
-    addNotification({
-      title: "Download Started",
-      message: `${item.title} (${item.filename}) is downloading.`,
-      type: "success",
+  const filteredItems = downloadItems
+    .filter((item) => {
+      const matchesSearch = item.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                           item.description.toLowerCase().includes(searchTerm.toLowerCase())
+      const matchesCategory = selectedCategory === "All" || item.category === selectedCategory
+      return matchesSearch && matchesCategory
+    })
+    .sort((a, b) => {
+      switch (sortBy) {
+        case "downloads":
+          return b.downloads - a.downloads
+        case "rating":
+          return b.rating - a.rating
+        case "date":
+          return new Date(b.date).getTime() - new Date(a.date).getTime()
+        case "name":
+          return a.name.localeCompare(b.name)
+        default:
+          return 0
+      }
     })
 
-    // Open the link in a new tab
-    window.open(item.link, "_blank")
+  const handleDownload = (item: typeof downloadItems[0]) => {
+    // Simulate download
+    console.log(`Downloading ${item.name}`)
+    // In a real app, this would trigger the actual download
   }
 
   return (
-    <div className="py-16">
+    <div className="py-8">
       <div className="max-w-7xl mx-auto">
-        <div className="flex items-center mb-8">
-          <Download className="h-8 w-8 text-primary mr-3" />
-          <h1 className="text-3xl md:text-5xl font-bold text-white">
-            <AnimatedText text="Downloads" className="text-gradient" />
+        <div className="mb-8">
+          <h1 className="text-3xl md:text-5xl font-bold text-white text-bloom-primary mb-4">
+            <span className="text-gradient">Downloads</span>
           </h1>
+          <p className="text-white/70 text-lg">
+            Free resources, tools, and assets for the s0lara community
+          </p>
         </div>
 
-        <div className="mb-8 glass rounded-xl p-6 border border-primary/20">
+        {/* Search and Filters */}
+        <div className="mb-8 space-y-4">
           <div className="flex flex-col md:flex-row gap-4">
             <div className="relative flex-1">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50" />
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-white/50 h-4 w-4" />
               <Input
-                type="text"
                 placeholder="Search downloads..."
-                className="pl-10 bg-black/50 border-primary/30 focus:border-primary"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                onKeyUp={(e) => e.key === "Enter" && handleSearch()}
+                className="pl-10 bg-black/50 border-primary/30 focus:border-primary text-white placeholder-white/50"
               />
             </div>
-            <div className="flex gap-2">
-              <div className="relative">
-                <select
-                  className="appearance-none bg-black/50 border border-primary/30 rounded-md px-4 py-2 pr-8 text-white focus:outline-none focus:border-primary"
-                  value={selectedCategory}
-                  onChange={(e) => {
-                    setSelectedCategory(e.target.value)
-                    setTimeout(handleSearch, 0)
-                  }}
-                >
-                  {categories.map((category) => (
-                    <option key={category} value={category}>
-                      {category}
-                    </option>
-                  ))}
-                </select>
-                <Filter className="absolute right-2 top-1/2 transform -translate-y-1/2 text-white/50 pointer-events-none h-4 w-4" />
-              </div>
-              <Button onClick={handleSearch}>Search</Button>
-            </div>
+            <Select value={selectedCategory} onValueChange={setSelectedCategory}>
+              <SelectTrigger className="w-full md:w-48 bg-black/50 border-primary/30 text-white">
+                <Filter className="h-4 w-4 mr-2" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-black/90 border-primary/30">
+                {categories.map((category) => (
+                  <SelectItem key={category} value={category} className="text-white hover:bg-primary/20">
+                    {category}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+            <Select value={sortBy} onValueChange={setSortBy}>
+              <SelectTrigger className="w-full md:w-48 bg-black/50 border-primary/30 text-white">
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent className="bg-black/90 border-primary/30">
+                {sortOptions.map((option) => (
+                  <SelectItem key={option.value} value={option.value} className="text-white hover:bg-primary/20">
+                    {option.label}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
         </div>
 
-        <Tabs
-          defaultValue="all"
-          className="mb-8"
-          onValueChange={(value) => {
-            setActiveTab(value)
-            setTimeout(handleSearch, 0)
-          }}
-        >
-          <TabsList className="grid grid-cols-3 mb-6">
-            <TabsTrigger value="all">
-              <FileText className="h-4 w-4 mr-2" />
-              All Files
-            </TabsTrigger>
-            <TabsTrigger value="recent">
-              <Clock className="h-4 w-4 mr-2" />
-              Recent
-            </TabsTrigger>
-            <TabsTrigger value="popular">
-              <Download className="h-4 w-4 mr-2" />
-              Most Downloaded
-            </TabsTrigger>
-          </TabsList>
-
-          <TabsContent value="all" className="mt-0">
-            <div className="space-y-4">
-              {filteredDownloads.map((item) => (
-                <Card
-                  key={item.id}
-                  className="glass border-primary/20 hover:border-primary/50 transition-all duration-300"
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center">
-                      <div className="mr-4 flex-shrink-0">{item.icon}</div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-white mb-1">{item.title}</h3>
-                        <p className="text-sm text-white/70">{item.description}</p>
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-white/50">
-                          <div>Version: {item.version}</div>
-                          <div>Size: {item.size}</div>
-                          <div>Date: {new Date(item.date).toLocaleDateString()}</div>
-                          <div>{item.downloads.toLocaleString()} downloads</div>
+        {/* Featured Downloads */}
+        {selectedCategory === "All" && searchTerm === "" && (
+          <div className="mb-8">
+            <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
+              <Star className="h-6 w-6 text-primary mr-2" />
+              Featured Downloads
+            </h2>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {downloadItems
+                .filter((item) => item.featured)
+                .map((item) => {
+                  const IconComponent = item.icon
+                  return (
+                    <Card key={item.id} className="glass border-primary/20 hover:border-primary/50 transition-all duration-300 transform hover:scale-[1.02]">
+                      <CardHeader>
+                        <div className="flex items-start justify-between">
+                          <div className="flex items-center space-x-3">
+                            <div className="w-12 h-12 rounded-lg bg-primary/20 flex items-center justify-center">
+                              <IconComponent className="h-6 w-6 text-primary" />
+                            </div>
+                            <div>
+                              <CardTitle className="text-white text-lg">{item.name}</CardTitle>
+                              <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30">
+                                {item.category}
+                              </Badge>
+                            </div>
+                          </div>
+                          <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30">
+                            <Star className="h-3 w-3 mr-1" />
+                            Featured
+                          </Badge>
                         </div>
-                      </div>
-                      <div className="ml-4">
-                        <Button onClick={() => handleDownload(item)}>
+                      </CardHeader>
+                      <CardContent>
+                        <p className="text-white/70 mb-4">{item.description}</p>
+                        <div className="flex items-center justify-between text-sm text-white/60 mb-4">
+                          <span>{item.size}</span>
+                          <span>{item.downloads.toLocaleString()} downloads</span>
+                          <div className="flex items-center">
+                            <Star className="h-4 w-4 text-yellow-400 mr-1" />
+                            {item.rating}
+                          </div>
+                        </div>
+                        <Button
+                          onClick={() => handleDownload(item)}
+                          className="w-full bg-primary hover:bg-primary/80 text-white"
+                        >
                           <Download className="h-4 w-4 mr-2" />
                           Download
-                          <ExternalLink className="h-3 w-3 ml-1" />
                         </Button>
-                        <Button variant="secondary" asChild>
-                          <a href={item.link} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Website
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+                      </CardContent>
+                    </Card>
+                  )
+                })}
             </div>
-          </TabsContent>
+          </div>
+        )}
 
-          <TabsContent value="recent" className="mt-0">
-            <div className="space-y-4">
-              {filteredDownloads.map((item) => (
-                <Card
-                  key={item.id}
-                  className="glass border-primary/20 hover:border-primary/50 transition-all duration-300"
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center">
-                      <div className="mr-4 flex-shrink-0">{item.icon}</div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-white mb-1">{item.title}</h3>
-                        <p className="text-sm text-white/70">{item.description}</p>
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-white/50">
-                          <div>Version: {item.version}</div>
-                          <div>Size: {item.size}</div>
-                          <div>Date: {new Date(item.date).toLocaleDateString()}</div>
-                          <div>{item.downloads.toLocaleString()} downloads</div>
+        {/* All Downloads */}
+        <div>
+          <h2 className="text-2xl font-bold text-white mb-4 flex items-center">
+            <Archive className="h-6 w-6 text-primary mr-2" />
+            All Downloads ({filteredItems.length})
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {filteredItems.map((item) => {
+              const IconComponent = item.icon
+              return (
+                <Card key={item.id} className="glass border-primary/20 hover:border-primary/50 transition-all duration-300 transform hover:scale-[1.02]">
+                  <CardHeader>
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center space-x-3">
+                        <div className="w-10 h-10 rounded-lg bg-primary/20 flex items-center justify-center">
+                          <IconComponent className="h-5 w-5 text-primary" />
+                        </div>
+                        <div>
+                          <CardTitle className="text-white text-base">{item.name}</CardTitle>
+                          <Badge variant="secondary" className="bg-primary/20 text-primary border-primary/30 text-xs">
+                            {item.category}
+                          </Badge>
                         </div>
                       </div>
-                      <div className="ml-4">
-                        <Button onClick={() => handleDownload(item)}>
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                          <ExternalLink className="h-3 w-3 ml-1" />
-                        </Button>
-                        <Button variant="secondary" asChild>
-                          <a href={item.link} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Website
-                          </a>
-                        </Button>
+                      {item.featured && (
+                        <Badge className="bg-yellow-500/20 text-yellow-400 border-yellow-500/30 text-xs">
+                          <Star className="h-3 w-3" />
+                        </Badge>
+                      )}
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <p className="text-white/70 text-sm mb-4">{item.description}</p>
+                    <div className="flex items-center justify-between text-xs text-white/60 mb-4">
+                      <span>{item.size}</span>
+                      <div className="flex items-center">
+                        <Star className="h-3 w-3 text-yellow-400 mr-1" />
+                        {item.rating}
                       </div>
                     </div>
+                    <div className="flex items-center justify-between text-xs text-white/60 mb-4">
+                      <span>{item.downloads.toLocaleString()} downloads</span>
+                      <div className="flex items-center">
+                        <Calendar className="h-3 w-3 mr-1" />
+                        {new Date(item.date).toLocaleDateString()}
+                      </div>
+                    </div>
+                    <Button
+                      onClick={() => handleDownload(item)}
+                      size="sm"
+                      className="w-full bg-primary hover:bg-primary/80 text-white"
+                    >
+                      <Download className="h-3 w-3 mr-2" />
+                      Download
+                    </Button>
                   </CardContent>
                 </Card>
-              ))}
-            </div>
-          </TabsContent>
+              )
+            })}
+          </div>
+        </div>
 
-          <TabsContent value="popular" className="mt-0">
-            <div className="space-y-4">
-              {filteredDownloads.map((item) => (
-                <Card
-                  key={item.id}
-                  className="glass border-primary/20 hover:border-primary/50 transition-all duration-300"
-                >
-                  <CardContent className="p-4">
-                    <div className="flex items-center">
-                      <div className="mr-4 flex-shrink-0">{item.icon}</div>
-                      <div className="flex-1">
-                        <h3 className="text-xl font-bold text-white mb-1">{item.title}</h3>
-                        <p className="text-sm text-white/70">{item.description}</p>
-                        <div className="flex flex-wrap gap-x-4 gap-y-1 mt-2 text-xs text-white/50">
-                          <div>Version: {item.version}</div>
-                          <div>Size: {item.size}</div>
-                          <div>Date: {new Date(item.date).toLocaleDateString()}</div>
-                          <div className="font-bold text-primary">{item.downloads.toLocaleString()} downloads</div>
-                        </div>
-                      </div>
-                      <div className="ml-4">
-                        <Button onClick={() => handleDownload(item)}>
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
-                          <ExternalLink className="h-3 w-3 ml-1" />
-                        </Button>
-                        <Button variant="secondary" asChild>
-                          <a href={item.link} target="_blank" rel="noopener noreferrer">
-                            <ExternalLink className="h-4 w-4 mr-2" />
-                            Website
-                          </a>
-                        </Button>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
+        {filteredItems.length === 0 && (
+          <div className="text-center py-12">
+            <Archive className="h-16 w-16 text-white/30 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-white mb-2">No downloads found</h3>
+            <p className="text-white/60">Try adjusting your search or filter criteria</p>
+          </div>
+        )}
       </div>
     </div>
   )

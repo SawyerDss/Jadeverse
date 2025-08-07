@@ -207,7 +207,7 @@ export default function AddContentPage() {
                   )}
                 </CardTitle>
                 <CardDescription>
-                  Add games or apps to your JadeVerse library
+                  Add games or apps to your s0lara library
                   {user.email === DEV_EMAIL && " - Your additions will be permanent for all users"}
                 </CardDescription>
               </CardHeader>

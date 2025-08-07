@@ -2,29 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import {
-  Gamepad2,
-  Settings,
-  LogOut,
-  ChevronLeft,
-  ChevronRight,
-  Users,
-  Info,
-  BotIcon as Robot,
-  AppWindow,
-  Lightbulb,
-  ChevronDown,
-  Code,
-  Download,
-  ShirtIcon as TShirt,
-  ShoppingCart,
-  Globe,
-  Home,
-  User,
-  Shield,
-  Film,
-  Coffee,
-} from "lucide-react"
+import { Gamepad2, Settings, LogOut, ChevronLeft, ChevronRight, Users, Info, BotIcon as Robot, AppWindow, Lightbulb, ChevronDown, Code, Download, ShirtIcon as TShirt, ShoppingCart, Home, User, Coffee, AlertTriangle } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/auth-context"
@@ -41,7 +19,6 @@ export default function Sidebar() {
     main: true,
     content: true,
     social: true,
-    tools: true,
     shop: true,
     other: true,
   })
@@ -69,7 +46,6 @@ export default function Sidebar() {
       setIsInitialized(true)
     } catch (error) {
       console.error("Error initializing sidebar:", error)
-      setIsInitialized(true)
     }
   }, [])
 
@@ -112,21 +88,15 @@ export default function Sidebar() {
     content: [
       { href: "/games", icon: Gamepad2, label: "Games" },
       { href: "/apps", icon: AppWindow, label: "Apps" },
-      { href: "/entertainment", icon: Film, label: "Entertainment", requiresFeature: "showMovies" },
+      { href: "/downloads", icon: Download, label: "Downloads" },
       ...(isFeatureEnabled("showExploits") ? [{ href: "/exploits", icon: Code, label: "Exploits" }] : []),
-      ...(isFeatureEnabled("showDownloads") ? [{ href: "/downloads", icon: Download, label: "Downloads" }] : []),
     ],
     social: [
-      ...(isFeatureEnabled("showJadeAI") ? [{ href: "/jade-ai", icon: Robot, label: "s0lara AI" }] : []),
+      { href: "/jade-ai", icon: Robot, label: "s0lara AI" },
       { href: "/friends", icon: Users, label: "Friends", requiresAuth: true },
     ],
-    shop: [{ href: "/merch", icon: TShirt, label: "Merchandise" }],
-    tools: [
-      ...(isFeatureEnabled("showBrowser") ? [{ href: "/browser", icon: Globe, label: "Browser" }] : []),
-      ...(isFeatureEnabled("showProxy") ? [{ href: "/proxy", icon: Shield, label: "Proxy" }] : []),
-    ],
+    shop: [{ href: "/merch", icon: TShirt, label: "Merchandise", disabled: true, alert: "NOT WORKING" }],
     other: [
-      ...(isFeatureEnabled("showAbout") ? [{ href: "/about", icon: Info, label: "About" }] : []),
       ...(isFeatureEnabled("showSuggestions") ? [{ href: "/suggestions", icon: Lightbulb, label: "Suggestions" }] : []),
       { href: "/credits", icon: Coffee, label: "Credits" },
     ],
@@ -137,7 +107,6 @@ export default function Sidebar() {
     content: "Content Library",
     social: "Community",
     shop: "Marketplace",
-    tools: "Web Tools",
     other: "Other",
   }
 
@@ -146,7 +115,6 @@ export default function Sidebar() {
     content: Gamepad2,
     social: Users,
     shop: ShoppingCart,
-    tools: Globe,
     other: Info,
   }
 
@@ -257,6 +225,41 @@ export default function Sidebar() {
                     .filter((item: any) => !item.requiresAuth || user)
                     .map((item: any, index: number) => {
                       const isActive = pathname === item.href
+                      const isDisabled = item.disabled
+
+                      if (isDisabled) {
+                        return (
+                          <div
+                            key={item.href}
+                            className={cn(
+                              "p-3 rounded-lg transition-all duration-300 relative group flex items-center cursor-not-allowed opacity-60",
+                              collapsed ? "justify-center w-10 mx-auto" : "w-full px-4 ml-2",
+                              "text-white/50 bg-red-500/10 border border-red-500/30",
+                            )}
+                            style={{
+                              animationDelay: `${index * 50}ms`,
+                            }}
+                          >
+                            <item.icon className={cn("flex-shrink-0", collapsed ? "h-5 w-5" : "h-5 w-5")} />
+                            {!collapsed && (
+                              <div className="flex items-center justify-between w-full ml-3">
+                                <span className="text-sm">{item.label}</span>
+                                <div className="flex items-center bg-red-500 text-white text-xs px-2 py-1 rounded-full">
+                                  <AlertTriangle className="h-3 w-3 mr-1" />
+                                  {item.alert}
+                                </div>
+                              </div>
+                            )}
+
+                            {collapsed && (
+                              <div className="absolute left-full ml-2 px-2 py-1 bg-black/90 border border-red-500/40 rounded text-white text-xs whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+                                {item.label} - {item.alert}
+                              </div>
+                            )}
+                          </div>
+                        )
+                      }
+
                       return (
                         <Link
                           key={item.href}
@@ -362,7 +365,7 @@ export default function Sidebar() {
           </Button>
         ) : (
           <Link
-            href="/login"
+            href="/auth"
             className={cn(
               "p-3 text-white/80 hover:text-white hover:bg-primary/10 rounded-lg transition-all duration-300 hover:scale-110 block relative group flex items-center",
               collapsed ? "justify-center w-10 mx-auto" : "w-full px-4",

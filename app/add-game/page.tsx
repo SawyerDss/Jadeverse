@@ -1,17 +1,17 @@
-"use client"
+'use client'
 
-import type React from "react"
+import type React from 'react'
 
-import { useState } from "react"
-import { useRouter } from "next/navigation"
-import { useGames } from "@/lib/games-context"
-import { useAuth } from "@/lib/auth-context"
-import { useNotification } from "@/lib/notification-context"
-import GlowingButton from "@/components/glowing-button"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { AlertCircle, LinkIcon, ImageIcon } from "lucide-react"
+import { useEffect, useState } from 'react'
+import { useRouter } from 'next/navigation'
+import { useGames } from '@/lib/games-context'
+import { useAuth } from '@/lib/auth-context'
+import { useNotification } from '@/lib/notification-context'
+import GlowingButton from '@/components/glowing-button'
+import { Input } from '@/components/ui/input'
+import { Label } from '@/components/ui/label'
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
+import { AlertCircle, LinkIcon, ImageIcon } from 'lucide-react'
 
 export default function AddGamePage() {
   const { user } = useAuth()
@@ -20,17 +20,18 @@ export default function AddGamePage() {
   const { addNotification } = useNotification()
 
   const [formData, setFormData] = useState({
-    title: "",
-    gameUrl: "",
-    imageUrl: "",
+    title: '',
+    gameUrl: '',
+    imageUrl: '',
   })
-  const [error, setError] = useState("")
+  const [error, setError] = useState('')
 
-  // Redirect if not logged in
-  if (!user) {
-    router.push("/login")
-    return null
-  }
+  // Redirect if not logged in, using useEffect to prevent state update errors
+  useEffect(() => {
+    if (!user) {
+      router.push('/auth') // Changed to /auth as per previous instructions
+    }
+  }, [user, router])
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target
@@ -39,16 +40,16 @@ export default function AddGamePage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
-    setError("")
+    setError('')
 
     // Validate form
     if (!formData.title) {
-      setError("Please enter a game title")
+      setError('Please enter a game title')
       return
     }
 
     if (!formData.gameUrl) {
-      setError("Please enter a game URL")
+      setError('Please enter a game URL')
       return
     }
 
@@ -61,40 +62,45 @@ export default function AddGamePage() {
         try {
           new URL(formData.imageUrl)
         } catch (err) {
-          setError("Please enter a valid image URL")
+          setError('Please enter a valid image URL')
           return
         }
       }
 
       // Generate a title from the URL if not provided
       const urlObj = new URL(formData.gameUrl)
-      const domain = urlObj.hostname.replace("www.", "")
+      const domain = urlObj.hostname.replace('www.', '')
 
       // Add game
-      const gameId = "game_" + Math.random().toString(36).substr(2, 9)
+      const gameId = 'game_' + Math.random().toString(36).substr(2, 9)
 
       addGame({
         title: formData.title || `${domain} Game`,
         description: `External game from ${domain}`,
-        category: "External",
+        category: 'External',
         image: formData.imageUrl || `/placeholder.svg?height=300&width=500&text=${domain}`,
-        icon: "🎮",
-        createdBy: user.username,
+        icon: '🎮',
+        createdBy: user?.username || 'Anonymous', // Use optional chaining and fallback
         url: formData.gameUrl,
       })
 
       // Show success notification
       addNotification({
-        title: "Game Added",
+        title: 'Game Added',
         message: `${formData.title} has been added to your library`,
-        type: "success",
+        type: 'success',
       })
 
       // Redirect to the game page
       router.push(`/games`)
     } catch (err) {
-      setError("Please enter a valid URL")
+      setError('Please enter a valid URL')
     }
+  }
+
+  // Render null or a loading spinner while redirecting or if user is not logged in yet
+  if (!user) {
+    return null // Or a loading spinner
   }
 
   return (
@@ -104,7 +110,7 @@ export default function AddGamePage() {
           <CardTitle className="text-3xl font-bold text-white">
             <span className="text-gradient">Add External Game</span>
           </CardTitle>
-          <CardDescription>Add any game by URL to your JadeVerse library</CardDescription>
+          <CardDescription>Add any game by URL to your s0lara library</CardDescription>
         </CardHeader>
 
         <CardContent>

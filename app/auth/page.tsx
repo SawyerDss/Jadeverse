@@ -10,9 +10,9 @@ import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import GlowingButton from "@/components/glowing-button"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { AlertCircle } from "lucide-react"
+import { AlertCircle } from 'lucide-react'
 
-export default function LoginPage() {
+export default function AuthPage() {
   const { signIn, signUp } = useAuth()
   const router = useRouter()
 
@@ -87,7 +87,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md glass border-primary/20">
         <CardHeader className="text-center">
           <CardTitle className="text-3xl font-bold">
-            <span className="text-gradient">JadeVerse</span>
+            <span className="text-gradient">s0lara</span>
           </CardTitle>
           <CardDescription>Enter the ultimate gaming platform</CardDescription>
         </CardHeader>

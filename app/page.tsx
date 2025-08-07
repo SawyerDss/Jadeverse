@@ -67,8 +67,7 @@ export default function Home() {
             <AnimatedText>Welcome to the Digital Universe</AnimatedText>
           </h2>
           <p className="text-xl md:text-2xl text-white/70 max-w-3xl mb-8 text-bloom">
-            Your gateway to a world of games, apps, and learning resources. Explore, play, and connect in our neon-lit
-            digital universe.
+            The best gaming website of 2025; play any game you want, request games at https://www.surveymonkey.com/r/XVWCP62
           </p>
           <div className="flex flex-wrap gap-4 justify-center">
             <Link href="/games">
@@ -77,7 +76,7 @@ export default function Home() {
             <Link href="/apps">
               <GlowingButton icon={<AppWindow className="h-5 w-5" />}>Discover Apps</GlowingButton>
             </Link>
-            <Link href="https://discord.gg/RDfcq2YMhg" target="_blank" rel="noopener noreferrer">
+            <Link href="https://discord.gg/k6m5xjwu" target="_blank" rel="noopener noreferrer">
               <GlowingButton icon={<Discord className="h-5 w-5" />}>Join Discord</GlowingButton>
             </Link>
           </div>
@@ -173,7 +172,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-bold text-white mb-2 text-bloom-primary">Endless Games</h3>
             <p className="text-white/70">
-              Access a growing library of games, from classics to modern favorites, all in one place.
+              access many free games
             </p>
           </div>
 
@@ -183,7 +182,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-bold text-white mb-2 text-bloom-primary">Useful Apps</h3>
             <p className="text-white/70">
-              Discover productivity tools, utilities, and creative apps to enhance your digital experience.
+              so many games to choose from
             </p>
           </div>
 
@@ -193,7 +192,7 @@ export default function Home() {
             </div>
             <h3 className="text-xl font-bold text-white mb-2 text-bloom-primary">Learning Resources</h3>
             <p className="text-white/70">
-              Access educational content and get homework help with our AI-powered assistant.
+             you can even use the ai tool!
             </p>
           </div>
         </div>
@@ -202,7 +201,7 @@ export default function Home() {
         <div className="glass rounded-xl p-8 border border-primary/20 text-center">
           <h2 className="text-3xl font-bold text-white mb-4 text-bloom">Ready to Join the Adventure?</h2>
           <p className="text-xl text-white/70 max-w-3xl mx-auto mb-6">
-            Create an account to save your favorite games, track your progress, and connect with other players.
+            create an account too
           </p>
           {!user ? (
             <Link href="/login">
@@ -210,7 +209,7 @@ export default function Home() {
             </Link>
           ) : (
             <Link href="/games">
-              <GlowingButton icon={<MessageSquare className="h-5 w-5" />}>Continue Your Journey</GlowingButton>
+              <GlowingButton icon={<MessageSquare className="h-5 w-5" />}>go on the main website</GlowingButton>
             </Link>
           )}
         </div>

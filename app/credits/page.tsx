@@ -19,7 +19,7 @@ export default function CreditsPage() {
         <Card className="glass border-primary/20 mb-8">
           <CardHeader>
             <CardTitle className="text-2xl text-white">s0lara</CardTitle>
-            <CardDescription>The Ultimate Gaming Experience</CardDescription>
+            <CardDescription>best game website no bias</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="flex justify-center mb-8">
@@ -30,8 +30,7 @@ export default function CreditsPage() {
             </div>
 
             <p className="text-white/80 text-center">
-              s0lara is a modern gaming platform designed to provide users with a seamless and immersive gaming
-              experience.
+              s0lara is the very best gaming website made for games when your bored (and done with work)
             </p>
 
             <div className="flex items-center justify-center mt-4">
@@ -49,29 +48,29 @@ export default function CreditsPage() {
 
         <Card className="glass border-primary/20 mb-8">
           <CardHeader>
-            <CardTitle className="text-xl text-white">Technologies Used</CardTitle>
+            <CardTitle className="text-xl text-white">Credits (stuff used)</CardTitle>
           </CardHeader>
           <CardContent>
             <ul className="space-y-2 text-white/80">
               <li className="flex items-center">
                 <div className="w-2 h-2 rounded-full bg-primary mr-2"></div>
-                <span>Next.js - React Framework</span>
+                <span>Next.js - Main website</span>
               </li>
               <li className="flex items-center">
                 <div className="w-2 h-2 rounded-full bg-primary mr-2"></div>
-                <span>Tailwind CSS - Styling</span>
+                <span>Tailwind CSS - Icons and stuff</span>
               </li>
               <li className="flex items-center">
                 <div className="w-2 h-2 rounded-full bg-primary mr-2"></div>
-                <span>Lucide Icons - Beautiful SVG icons</span>
+                <span>Lucide Icons - More icons</span>
               </li>
               <li className="flex items-center">
                 <div className="w-2 h-2 rounded-full bg-primary mr-2"></div>
-                <span>Vercel - Hosting and Deployment</span>
+                <span>Vercel - Running the website</span>
               </li>
               <li className="flex items-center">
                 <div className="w-2 h-2 rounded-full bg-primary mr-2"></div>
-                <span>TypeScript - Type Safety</span>
+                <span>Grok - AI</span>
               </li>
             </ul>
           </CardContent>
@@ -83,14 +82,14 @@ export default function CreditsPage() {
           </CardHeader>
           <CardContent className="space-y-4">
             <p className="text-white/80">
-              Special thanks to all the contributors and users who have helped make s0lara better.
+              request if you want your name here - ______
             </p>
 
             <div className="flex flex-wrap gap-2 mt-4">
-              <Link href="https://github.com" target="_blank" rel="noopener noreferrer">
+              <Link href="https://nextjs.org/" target="_blank" rel="noopener noreferrer">
                 <Button variant="outline" className="border-primary/30 text-white hover:bg-primary/10 bg-transparent">
                   <Github className="h-4 w-4 mr-2" />
-                  GitHub
+                  Next js
                 </Button>
               </Link>
               <Link href="https://vercel.com" target="_blank" rel="noopener noreferrer">

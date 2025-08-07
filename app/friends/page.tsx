@@ -15,14 +15,14 @@ import AnimatedText from "@/components/animated-text"
 
 // Mock data for friends
 const mockUsers = [
-  { id: "user1", username: "GamerPro99", status: "online" },
-  { id: "user2", username: "NeonHacker", status: "online" },
-  { id: "user3", username: "PixelWarrior", status: "offline" },
-  { id: "user4", username: "CyberNinja", status: "online" },
-  { id: "user5", username: "QuantumGamer", status: "offline" },
-  { id: "user6", username: "ByteMaster", status: "online" },
-  { id: "user7", username: "CodeWizard", status: "offline" },
-  { id: "user8", username: "TechGeek", status: "online" },
+  { id: "user1", username: "test1", status: "online" },
+  { id: "user2", username: "test2", status: "online" },
+  { id: "user3", username: "test3", status: "offline" },
+  { id: "user4", username: "test4", status: "online" },
+  { id: "user5", username: "test5", status: "offline" },
+  { id: "user6", username: "test6", status: "online" },
+  { id: "user7", username: "test7", status: "offline" },
+  { id: "user8", username: "test8", status: "online" },
 ]
 
 export default function FriendsPage() {
@@ -137,8 +137,8 @@ export default function FriendsPage() {
           {/* Add Friend Card */}
           <Card className="glass border-primary/20 md:col-span-3">
             <CardHeader>
-              <CardTitle className="text-xl text-white">Add Friend</CardTitle>
-              <CardDescription>Send a friend request to another JadeVerse user</CardDescription>
+              <CardTitle className="text-xl text-white">Add Friend (THIS IS FAKE, ITS A TEST)</CardTitle>
+              <CardDescription>Send a friend request to another s0lara user</CardDescription>
             </CardHeader>
             <CardContent>
               <form onSubmit={handleSendRequest} className="flex gap-2">

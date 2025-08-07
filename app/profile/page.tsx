@@ -237,7 +237,7 @@ export default function ProfilePage() {
                 <Card className="glass border-primary/20">
                   <CardHeader>
                     <CardTitle className="text-xl text-white text-bloom">My Content</CardTitle>
-                    <CardDescription>Games and apps you've added to JadeVerse</CardDescription>
+                    <CardDescription>Games and apps you've added to s0lara</CardDescription>
                   </CardHeader>
                   <CardContent>
                     {userGames.length === 0 ? (
@@ -310,7 +310,7 @@ export default function ProfilePage() {
                 <Card className="glass border-primary/20">
                   <CardHeader>
                     <CardTitle className="text-xl text-white text-bloom">Recent Activity</CardTitle>
-                    <CardDescription>Your recent activity on JadeVerse</CardDescription>
+                    <CardDescription>Your recent activity on s0lara</CardDescription>
                   </CardHeader>
                   <CardContent>
                     <div className="space-y-4">
@@ -361,7 +361,7 @@ export default function ProfilePage() {
                         },
                         {
                           name: "Explorer",
-                          description: "Visited all sections of JadeVerse",
+                          description: "Visited all sections of s0lara",
                           icon: "🧭",
                           unlocked: true,
                         },
@@ -373,14 +373,14 @@ export default function ProfilePage() {
                           unlocked: false,
                         },
                         {
-                          name: "Web Surfer",
+                          name: "THESE ARE TEST ACHIEVEMENTS, THEY DONT WORK",
                           description: "Used the proxy to visit 5 websites",
                           icon: "🌐",
                           unlocked: false,
                         },
                         {
                           name: "AI Scholar",
-                          description: "Asked JadeAI 10 questions",
+                          description: "Asked the AI 10 questions",
                           icon: "🤖",
                           unlocked: true,
                         },

@@ -125,7 +125,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Show success notification
       addNotification({
         title: "Account Created",
-        message: `Welcome to JadeVerse, ${username}!`,
+        message: `Welcome to s0lara, ${username}!`,
         type: "success",
       })
 
