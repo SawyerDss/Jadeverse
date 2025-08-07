@@ -11,7 +11,7 @@ export async function POST(req: Request) {
     }
 
     const result = await streamText({
-      model: groq("llama-3.1-8b-instant"), // Updated model to a currently supported one
+      model: groq("llama-3.1-8b-instant"), // Ensure this model is still supported by Groq
       messages,
       system: `You are s0lara AI, a helpful and knowledgeable assistant created for the s0lara gaming platform. You can help with:
 
@@ -32,11 +32,11 @@ Be friendly, clear, and educational in your responses. Always aim to help users 
   } catch (error) {
     console.error("Error in chat API:", error)
     return new Response(
-      JSON.stringify({ 
+      JSON.stringify({
         error: "Failed to process chat request",
         details: error instanceof Error ? error.message : String(error)
       }),
-      { 
+      {
         status: 500,
         headers: { "Content-Type": "application/json" }
       }

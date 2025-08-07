@@ -21,6 +21,7 @@ const downloadItems = [
     type: "zip",
     icon: Image,
     featured: true,
+    downloadLink: "https://example.com/download1.zip",
   },
   {
     id: 2,
@@ -34,6 +35,7 @@ const downloadItems = [
     type: "zip",
     icon: Code,
     featured: true,
+    downloadLink: "https://example.com/download2.zip",
   },
   {
     id: 3,
@@ -46,6 +48,7 @@ const downloadItems = [
     date: "67",
     type: "zip",
     icon: Music,
+    downloadLink: "https://example.com/download3.zip",
   },
   {
     id: 4,
@@ -58,6 +61,7 @@ const downloadItems = [
     date: "67",
     type: "zip",
     icon: Code,
+    downloadLink: "https://example.com/download4.zip",
   },
   {
     id: 5,
@@ -70,6 +74,7 @@ const downloadItems = [
     date: "2024-01-03",
     type: "zip",
     icon: Video,
+    downloadLink: "https://example.com/download5.zip",
   },
   {
     id: 6,
@@ -82,6 +87,7 @@ const downloadItems = [
     date: "76",
     type: "pdf",
     icon: FileText,
+    downloadLink: "https://example.com/download6.pdf",
   },
 ]
 
@@ -119,12 +125,6 @@ export default function DownloadsPage() {
           return 0
       }
     })
-
-  const handleDownload = (item: typeof downloadItems[0]) => {
-    // Simulate download
-    console.log(`Downloading ${item.name}`)
-    // In a real app, this would trigger the actual download
-  }
 
   return (
     <div className="py-8">
@@ -221,12 +221,11 @@ export default function DownloadsPage() {
                             {item.rating}
                           </div>
                         </div>
-                        <Button
-                          onClick={() => handleDownload(item)}
-                          className="w-full bg-primary hover:bg-primary/80 text-white"
-                        >
-                          <Download className="h-4 w-4 mr-2" />
-                          Download
+                        <Button asChild className="w-full bg-primary hover:bg-primary/80 text-white">
+                          <a href={item.downloadLink} target="_blank" rel="noopener noreferrer">
+                            <Download className="h-4 w-4 mr-2" />
+                            Download
+                          </a>
                         </Button>
                       </CardContent>
                     </Card>
@@ -283,13 +282,11 @@ export default function DownloadsPage() {
                         {new Date(item.date).toLocaleDateString()}
                       </div>
                     </div>
-                    <Button
-                      onClick={() => handleDownload(item)}
-                      size="sm"
-                      className="w-full bg-primary hover:bg-primary/80 text-white"
-                    >
-                      <Download className="h-3 w-3 mr-2" />
-                      Download
+                    <Button asChild size="sm" className="w-full bg-primary hover:bg-primary/80 text-white">
+                      <a href={item.downloadLink} target="_blank" rel="noopener noreferrer">
+                        <Download className="h-3 w-3 mr-2" />
+                        Download
+                      </a>
                     </Button>
                   </CardContent>
                 </Card>
