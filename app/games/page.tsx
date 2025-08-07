@@ -7,7 +7,7 @@ import { useGames } from "@/lib/games-context"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import { Search, Heart, HeartCrack, PlusCircle } from "lucide-react"
+import { Search, Heart, HeartCrack, PlusCircle } from 'lucide-react'
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/lib/auth-context"
 import { useSettings } from "@/lib/settings-context"
@@ -52,20 +52,20 @@ export default function GamesPage() {
     return (
       <div className="flex flex-col items-center justify-center min-h-screen p-4 text-white">
         <div className="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-primary"></div>
-        <p className="mt-4 text-lg">Loading games...</p>
+        <p className="mt-4 text-lg">Loading experiences...</p>
       </div>
     )
   }
 
   return (
     <div className="container mx-auto p-4 sm:p-6 lg:p-8">
-      <h1 className="text-4xl font-bold text-white mb-8 text-center drop-shadow-lg">Game Library</h1>
+      <h1 className="text-4xl font-bold text-white mb-8 text-center drop-shadow-lg">Experience Library</h1>
 
       <div className="mb-8 flex flex-col sm:flex-row items-center justify-between gap-4">
         <div className="relative w-full sm:w-1/2">
           <Input
             type="text"
-            placeholder="Search games..."
+            placeholder="Search experiences..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="w-full pl-10 pr-4 py-2 rounded-full bg-white/10 border border-primary/30 text-white placeholder-white/70 focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
@@ -105,7 +105,7 @@ export default function GamesPage() {
             <Link href="/add-game">
               <Button className="px-4 py-2 rounded-full bg-gradient-to-r from-primary to-secondary text-white shadow-lg shadow-primary/30 hover:scale-105 transition-transform duration-300">
                 <PlusCircle className="mr-2" size={20} />
-                Add Game
+                Add Experience
               </Button>
             </Link>
           )}
@@ -113,7 +113,7 @@ export default function GamesPage() {
       </div>
 
       {filteredGames.length === 0 ? (
-        <p className="text-white text-center text-lg mt-16">No games found matching your criteria.</p>
+        <p className="text-white text-center text-lg mt-16">No experiences found matching your criteria.</p>
       ) : (
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
           {filteredGames.map((game, index) => (
