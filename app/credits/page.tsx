@@ -4,10 +4,18 @@ import { Coffee, Heart, Github, ExternalLink, Rocket } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useState } from "react"
 
 export default function CreditsPage() {
+  const [showMessage, setShowMessage] = useState(false)
+
+  const handleCapybaraClick = () => {
+    setShowMessage(true)
+    setTimeout(() => setShowMessage(false), 2000) // Hide message after 2 seconds
+  }
+
   return (
-    <div className="py-16">
+    <div className="py-16 relative">
       <div className="max-w-3xl mx-auto">
         <div className="flex items-center mb-8">
           <Coffee className="h-8 w-8 text-primary mr-3" />
@@ -81,9 +89,7 @@ export default function CreditsPage() {
             <CardTitle className="text-xl text-white">Special Thanks</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-white/80">
-              request if you want your name here - ______
-            </p>
+            <p className="text-white/80">request if you want your name here - ______</p>
 
             <div className="flex flex-wrap gap-2 mt-4">
               <Link href="https://nextjs.org/" target="_blank" rel="noopener noreferrer">
@@ -101,6 +107,27 @@ export default function CreditsPage() {
             </div>
           </CardContent>
         </Card>
+      </div>
+
+      {/* Capybara in bottom right */}
+      <div className="fixed bottom-4 right-4 z-50">
+        <div className="relative">
+          <img
+            src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSYw0Awb2exPlIv1CAw3Zg8_3YLkGxfggJ7bg&s"
+            alt="Capybara"
+            className="w-20 h-20 cursor-pointer hover:scale-110 transition-transform duration-200 rounded-full border-2 border-primary/30 shadow-lg shadow-primary/20 object-cover"
+            onClick={handleCapybaraClick}
+            crossOrigin="anonymous"
+          />
+
+          {/* Message bubble */}
+          {showMessage && (
+            <div className="absolute bottom-full right-0 mb-2 bg-primary text-white px-3 py-2 rounded-lg shadow-lg animate-bounce">
+              <div className="text-sm font-medium">hi nolan</div>
+              <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-primary"></div>
+            </div>
+          )}
+        </div>
       </div>
     </div>
   )

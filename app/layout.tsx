@@ -5,7 +5,7 @@ import ClientRootLayout from "./client"
 export const metadata: Metadata = {
   title: "s0lara - The Ultimate Gaming Experience",
   description: "Dive into the ultimate gaming experience with s0lara. Play the latest games with stunning visuals.",
-    generator: 'v0.dev'
+    generator: 'v0.app'
 }
 
 export default function RootLayout({
