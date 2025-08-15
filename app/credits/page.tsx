@@ -89,7 +89,7 @@ export default function CreditsPage() {
             <CardTitle className="text-xl text-white">Special Thanks</CardTitle>
           </CardHeader>
           <CardContent className="space-y-4">
-            <p className="text-white/80">request if you want your name here - ______</p>
+            <p className="text-white/80">request if you want your name here - ______ (carson was here)</p>
 
             <div className="flex flex-wrap gap-2 mt-4">
               <Link href="https://nextjs.org/" target="_blank" rel="noopener noreferrer">
