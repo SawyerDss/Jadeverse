@@ -1,11 +1,12 @@
 "use client"
 
-import { useEffect } from "react"
+import type React from "react"
+
+import { useEffect, useRef } from "react"
 import { Settings, EyeOff, Palette, AlertTriangle } from "lucide-react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Label } from "@/components/ui/label"
 import { Switch } from "@/components/ui/switch"
-import { useAuth } from "@/lib/auth-context"
 import GlowingButton from "@/components/glowing-button"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
@@ -14,12 +15,14 @@ import { ThemeCustomizer } from "./theme-customizer"
 import { useTheme } from "@/lib/theme-context"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useSettings } from "@/lib/settings-context"
+import { useAuth } from "@/lib/auth-context" // Import useAuth
 
 export default function SettingsPage() {
   const { user } = useAuth()
   const router = useRouter()
   const { theme, setTheme } = useTheme()
   const { settings, updateSettings, resetSettings, isFeatureEnabled } = useSettings()
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   // Set up panic key listener
   useEffect(() => {
@@ -75,6 +78,29 @@ export default function SettingsPage() {
     alert(`Press the ${settings.panicKey} key to test the panic button feature.`)
   }
 
+  const handleLogoUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0]
+    if (file) {
+      const reader = new FileReader()
+      reader.onload = (e) => {
+        const result = e.target?.result as string
+        updateSettings({ customLogo: result })
+      }
+      reader.readAsDataURL(file)
+    }
+  }
+
+  const triggerFileUpload = () => {
+    fileInputRef.current?.click()
+  }
+
+  const clearCustomLogo = () => {
+    updateSettings({ customLogo: "" })
+    if (fileInputRef.current) {
+      fileInputRef.current.value = ""
+    }
+  }
+
   return (
     <div className="py-16">
       <div className="max-w-3xl mx-auto">
@@ -102,6 +128,59 @@ export default function SettingsPage() {
 
               <ThemeCustomizer currentTheme={theme} onThemeChange={setTheme} />
             </div>
+
+            {/* Custom Logo Section */}
+            <Card className="glass border-primary/20">
+              <CardHeader>
+                <CardTitle className="text-xl text-white flex items-center">
+                  <Settings className="h-5 w-5 text-primary mr-2" />
+                  Custom Logo
+                </CardTitle>
+                <CardDescription>Upload a custom image for the top-left logo</CardDescription>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="space-y-4">
+                  {settings.customLogo && (
+                    <div className="flex items-center space-x-4">
+                      <div className="w-16 h-16 rounded-lg overflow-hidden border border-primary/30">
+                        <img
+                          src={settings.customLogo || "/placeholder.svg"}
+                          alt="Custom Logo Preview"
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                      <div className="flex-1">
+                        <p className="text-white text-sm">Current custom logo</p>
+                        <p className="text-white/50 text-xs">This will replace the s0lara text in the sidebar</p>
+                      </div>
+                    </div>
+                  )}
+
+                  <div className="flex gap-2">
+                    <GlowingButton onClick={triggerFileUpload} className="flex-1">
+                      {settings.customLogo ? "Change Logo" : "Upload Logo"}
+                    </GlowingButton>
+                    {settings.customLogo && (
+                      <GlowingButton onClick={clearCustomLogo} className="px-4">
+                        Clear
+                      </GlowingButton>
+                    )}
+                  </div>
+
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    onChange={handleLogoUpload}
+                    className="hidden"
+                  />
+
+                  <p className="text-white/50 text-xs">
+                    Supported formats: JPG, PNG, GIF, WebP. Recommended size: 64x64 pixels or square aspect ratio.
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
           </TabsContent>
 
           <TabsContent value="privacy" className="space-y-6">

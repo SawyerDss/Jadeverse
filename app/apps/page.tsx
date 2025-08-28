@@ -48,7 +48,7 @@ export default function AppsPage() {
       <div className="max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4">
           <h1 className="text-3xl md:text-5xl font-bold text-white text-bloom-primary">
-            <span className="text-gradient">Apps</span> Library
+            <span className="text-gradient">Proxies</span> Library
           </h1>
 
           <div className="flex items-center gap-4">

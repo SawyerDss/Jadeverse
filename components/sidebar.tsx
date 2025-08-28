@@ -2,7 +2,27 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Gamepad2, Settings, LogOut, ChevronLeft, ChevronRight, Users, Info, BotIcon as Robot, AppWindow, Lightbulb, ChevronDown, Code, Download, ShirtIcon as TShirt, ShoppingCart, Home, User, Coffee, AlertTriangle } from 'lucide-react'
+import {
+  Gamepad2,
+  Settings,
+  LogOut,
+  ChevronLeft,
+  ChevronRight,
+  Users,
+  Info,
+  Bot as Robot,
+  AppWindow,
+  Lightbulb,
+  ChevronDown,
+  Code,
+  Download,
+  Shirt as TShirt,
+  ShoppingCart,
+  Home,
+  User,
+  Coffee,
+  AlertTriangle,
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/lib/auth-context"
@@ -87,13 +107,13 @@ export default function Sidebar() {
     main: [{ href: "/", icon: Home, label: "Home" }],
     content: [
       { href: "/games", icon: Gamepad2, label: "Games" },
-      { href: "/apps", icon: AppWindow, label: "Apps" },
+      { href: "/apps", icon: AppWindow, label: "Proxies" },
       { href: "/downloads", icon: Download, label: "Downloads" },
       ...(isFeatureEnabled("showExploits") ? [{ href: "/exploits", icon: Code, label: "Exploits" }] : []),
     ],
     social: [
       { href: "/jade-ai", icon: Robot, label: "s0lara AI" },
-      { href: "/friends", icon: Users, label: "Friends", requiresAuth: true },
+      // Removed the friends line entirely
     ],
     shop: [{ href: "/merch", icon: TShirt, label: "Merchandise", disabled: true, alert: "NOT WORKING" }],
     other: [
@@ -159,7 +179,15 @@ export default function Sidebar() {
         href="/"
         className="p-3 rounded-lg text-white mb-8 hover:scale-110 transition-transform duration-300 relative group"
       >
-        {collapsed ? (
+        {settings.customLogo ? (
+          <div className={cn("rounded-lg overflow-hidden", collapsed ? "w-8 h-8" : "w-12 h-12")}>
+            <img
+              src={settings.customLogo || "/placeholder.svg"}
+              alt="Custom Logo"
+              className="w-full h-full object-cover"
+            />
+          </div>
+        ) : collapsed ? (
           <AnimatedText text="s0" className="text-sm font-bold" gradient />
         ) : (
           <AnimatedText text="s0lara" className="text-lg font-bold" gradient />

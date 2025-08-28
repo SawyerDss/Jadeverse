@@ -31,6 +31,9 @@ export interface Settings {
   aboutBlankCloaking: boolean
   autoTabCloaking: boolean
   panicKey: string
+
+  // Custom settings
+  customLogo: string
 }
 
 interface SettingsContextType {
@@ -68,6 +71,9 @@ const defaultSettings: Settings = {
   aboutBlankCloaking: false,
   autoTabCloaking: false,
   panicKey: "Escape",
+
+  // Custom settings
+  customLogo: "",
 }
 
 const SettingsContext = createContext<SettingsContextType | undefined>(undefined)
