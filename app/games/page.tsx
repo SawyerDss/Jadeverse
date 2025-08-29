@@ -7,7 +7,7 @@ import { useGames } from "@/lib/games-context"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardTitle } from "@/components/ui/card"
-import { Search, Heart, HeartCrack, PlusCircle } from 'lucide-react'
+import { Search, Heart, HeartCrack, PlusCircle } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { useAuth } from "@/lib/auth-context"
 import { useSettings } from "@/lib/settings-context"
@@ -20,6 +20,7 @@ export default function GamesPage() {
   const [filterCategory, setFilterCategory] = useState("All")
   const [showFavorites, setShowFavorites] = useState(false)
   const [isClient, setIsClient] = useState(false)
+  const [sortOption, setSortOption] = useState("recently-played")
 
   useEffect(() => {
     setIsClient(true)
@@ -45,8 +46,18 @@ export default function GamesPage() {
       filtered = filtered.filter((game) => game.isFavorite)
     }
 
+    // Apply sorting
+    if (sortOption === "a-z") {
+      filtered = filtered.sort((a, b) => a.title.localeCompare(b.title))
+    } else if (sortOption === "z-a") {
+      filtered = filtered.sort((a, b) => b.title.localeCompare(a.title))
+    } else if (sortOption === "recently-played") {
+      // Sort by recently played (assuming games have a lastPlayed property, or just keep original order)
+      filtered = [...filtered] // Keep original order for now
+    }
+
     return filtered
-  }, [games, searchTerm, filterCategory, showFavorites])
+  }, [games, searchTerm, filterCategory, showFavorites, sortOption])
 
   if (!isClient) {
     return (
@@ -85,6 +96,34 @@ export default function GamesPage() {
               </option>
             ))}
           </select>
+
+          <select
+            value={sortOption}
+            onChange={(e) => setSortOption(e.target.value)}
+            className="px-4 py-2 rounded-full bg-white/10 border border-primary/30 text-white focus:ring-2 focus:ring-primary focus:border-transparent transition-all duration-300"
+          >
+            <option value="recently-played" className="bg-black text-white">
+              Recently Played
+            </option>
+            <option value="a-z" className="bg-black text-white">
+              A-Z
+            </option>
+            <option value="z-a" className="bg-black text-white">
+              Z-A
+            </option>
+          </select>
+
+          <Button
+            onClick={() => {
+              const randomGame = filteredGames[Math.floor(Math.random() * filteredGames.length)]
+              if (randomGame) {
+                window.location.href = `/games/${randomGame.id}`
+              }
+            }}
+            className="px-4 py-2 rounded-full bg-gradient-to-r from-purple-500 to-pink-500 text-white shadow-lg shadow-purple-500/30 hover:scale-105 transition-transform duration-300"
+          >
+            🎲 Random Game
+          </Button>
 
           {user && (
             <Button

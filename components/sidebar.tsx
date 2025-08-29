@@ -12,7 +12,6 @@ import {
   Info,
   Bot as Robot,
   AppWindow,
-  Lightbulb,
   ChevronDown,
   Code,
   Download,
@@ -21,7 +20,6 @@ import {
   Home,
   User,
   Coffee,
-  AlertTriangle,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -107,7 +105,7 @@ export default function Sidebar() {
     main: [{ href: "/", icon: Home, label: "Home" }],
     content: [
       { href: "/games", icon: Gamepad2, label: "Games" },
-      { href: "/apps", icon: AppWindow, label: "Proxies" },
+      { href: "/apps", icon: AppWindow, label: "Proxees/Game Sites" },
       { href: "/downloads", icon: Download, label: "Downloads" },
       ...(isFeatureEnabled("showExploits") ? [{ href: "/exploits", icon: Code, label: "Exploits" }] : []),
     ],
@@ -115,11 +113,8 @@ export default function Sidebar() {
       { href: "/jade-ai", icon: Robot, label: "s0lara AI" },
       // Removed the friends line entirely
     ],
-    shop: [{ href: "/merch", icon: TShirt, label: "Merchandise", disabled: true, alert: "NOT WORKING" }],
-    other: [
-      ...(isFeatureEnabled("showSuggestions") ? [{ href: "/suggestions", icon: Lightbulb, label: "Suggestions" }] : []),
-      { href: "/credits", icon: Coffee, label: "Credits" },
-    ],
+    shop: [{ href: "/merch", icon: TShirt, label: "Merchandise" }],
+    other: [{ href: "/credits", icon: Coffee, label: "Credits" }],
   }
 
   const groupLabels = {
@@ -253,40 +248,6 @@ export default function Sidebar() {
                     .filter((item: any) => !item.requiresAuth || user)
                     .map((item: any, index: number) => {
                       const isActive = pathname === item.href
-                      const isDisabled = item.disabled
-
-                      if (isDisabled) {
-                        return (
-                          <div
-                            key={item.href}
-                            className={cn(
-                              "p-3 rounded-lg transition-all duration-300 relative group flex items-center cursor-not-allowed opacity-60",
-                              collapsed ? "justify-center w-10 mx-auto" : "w-full px-4 ml-2",
-                              "text-white/50 bg-red-500/10 border border-red-500/30",
-                            )}
-                            style={{
-                              animationDelay: `${index * 50}ms`,
-                            }}
-                          >
-                            <item.icon className={cn("flex-shrink-0", collapsed ? "h-5 w-5" : "h-5 w-5")} />
-                            {!collapsed && (
-                              <div className="flex items-center justify-between w-full ml-3">
-                                <span className="text-sm">{item.label}</span>
-                                <div className="flex items-center bg-red-500 text-white text-xs px-2 py-1 rounded-full">
-                                  <AlertTriangle className="h-3 w-3 mr-1" />
-                                  {item.alert}
-                                </div>
-                              </div>
-                            )}
-
-                            {collapsed && (
-                              <div className="absolute left-full ml-2 px-2 py-1 bg-black/90 border border-red-500/40 rounded text-white text-xs whitespace-nowrap opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
-                                {item.label} - {item.alert}
-                              </div>
-                            )}
-                          </div>
-                        )
-                      }
 
                       return (
                         <Link

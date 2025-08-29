@@ -27,6 +27,19 @@
   --scrollbar-thumb: var(--primary);
   --scrollbar-track: rgba(0, 0, 0, 0.2);
   --scrollbar-width: 8px;
+  --font-family: Inter, system-ui, -apple-system, sans-serif;
+  --font-weight: 400;
+  --font-size: 16px;
+}
+
+/* Apply custom font variables */
+body {
+  font-family: var(--font-family);
+  font-weight: var(--font-weight);
+  font-size: var(--font-size);
+  background-color: black;
+  color: white;
+  overflow-x: hidden;
 }
 
 /* Custom Scrollbar for the entire site */
@@ -168,12 +181,6 @@
   --card-foreground: 0 0% 100%;
   --popover-foreground: 0 0% 100%;
   --border: 158 100% 40%;
-}
-
-body {
-  background-color: black;
-  color: white;
-  overflow-x: hidden;
 }
 
 /* Animations */

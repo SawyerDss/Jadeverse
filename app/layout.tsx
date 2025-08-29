@@ -1,6 +1,7 @@
 import type React from "react"
 import type { Metadata } from "next"
 import ClientRootLayout from "./client"
+import "./globals.css"
 
 export const metadata: Metadata = {
   title: "s0lara - The Ultimate Gaming Experience",
@@ -15,6 +16,3 @@ export default function RootLayout({
 }>) {
   return <ClientRootLayout>{children}</ClientRootLayout>
 }
-
-
-import './globals.css'

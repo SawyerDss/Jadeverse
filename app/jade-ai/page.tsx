@@ -1,7 +1,9 @@
 "use client"
 
+import type React from "react"
+
 import { useState, useRef, useEffect } from "react"
-import { Send, Bot, User, Loader2 } from 'lucide-react'
+import { Send, Bot, User, Loader2 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { ScrollArea } from "@/components/ui/scroll-area"
@@ -35,33 +37,36 @@ export default function JadeAIPage() {
     const userMessage: Message = {
       id: Date.now().toString(),
       role: "user",
-      content: input.trim()
+      content: input.trim(),
     }
 
-    setMessages(prev => [...prev, userMessage])
+    setMessages((prev) => [...prev, userMessage])
     setInput("")
     setIsLoading(true)
     setError(null)
 
     try {
-      console.log("Client: Sending request to /api/chat with messages:", [...messages, userMessage].map(msg => ({ role: msg.role, content: msg.content })));
+      console.log(
+        "Client: Sending request to /api/chat with messages:",
+        [...messages, userMessage].map((msg) => ({ role: msg.role, content: msg.content })),
+      )
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
         body: JSON.stringify({
-          messages: [...messages, userMessage].map(msg => ({
+          messages: [...messages, userMessage].map((msg) => ({
             role: msg.role,
-            content: msg.content
-          }))
+            content: msg.content,
+          })),
         }),
       })
 
-      console.log("Client: Response status:", response.status);
+      console.log("Client: Response status:", response.status)
       if (!response.ok) {
         const errorText = await response.text()
-        console.error("Client: API response error text:", errorText);
+        console.error("Client: API response error text:", errorText)
         throw new Error(`HTTP error! status: ${response.status}, message: ${errorText}`)
       }
 
@@ -73,11 +78,11 @@ export default function JadeAIPage() {
       const assistantMessage: Message = {
         id: (Date.now() + 1).toString(),
         role: "assistant",
-        content: ""
+        content: "",
       }
 
-      setMessages(prev => [...prev, assistantMessage])
-      console.log("Client: Added initial assistant message.");
+      setMessages((prev) => [...prev, assistantMessage])
+      console.log("Client: Added initial assistant message.")
 
       const decoder = new TextDecoder()
       let done = false
@@ -88,9 +93,9 @@ export default function JadeAIPage() {
 
         if (value) {
           const chunk = decoder.decode(value, { stream: true })
-          console.log("Client: Received chunk:", chunk); // Log each received chunk
+          console.log("Client: Received chunk:", chunk) // Log each received chunk
 
-          setMessages(prev => {
+          setMessages((prev) => {
             const newMessages = [...prev]
             const lastMessage = newMessages[newMessages.length - 1]
             if (lastMessage && lastMessage.role === "assistant") {
@@ -100,12 +105,12 @@ export default function JadeAIPage() {
           })
         }
       }
-      console.log("Client: Streaming complete.");
+      console.log("Client: Streaming complete.")
     } catch (err) {
       console.error("Client: Chat error:", err)
       setError(err instanceof Error ? err.message : "An error occurred")
       // Remove the empty assistant message if there was an error
-      setMessages(prev => prev.filter(msg => !(msg.role === "assistant" && msg.content === "")))
+      setMessages((prev) => prev.filter((msg) => !(msg.role === "assistant" && msg.content === "")))
     } finally {
       setIsLoading(false)
     }
@@ -116,35 +121,29 @@ export default function JadeAIPage() {
   }
 
   return (
-    <div className="py-8 h-screen flex flex-col">
+    <div className="py-8 min-h-screen flex flex-col">
       <div className="max-w-4xl mx-auto flex-1 flex flex-col">
         <div className="mb-6">
           <h1 className="text-3xl md:text-5xl font-bold text-white text-bloom-primary">
             <span className="text-gradient">s0lara</span> AI Assistant
           </h1>
-          <p className="text-white/70 text-lg">
-            AI Tool made for s0lara with Grok Ai
-          </p>
+          <p className="text-white/70 text-lg">AI Tool made for s0lara with Grok Ai</p>
         </div>
 
-        <Card className="glass border-primary/20 flex-1 flex flex-col">
+        <Card className="glass border-primary/20 flex flex-col">
           <CardHeader className="border-b border-primary/20">
             <CardTitle className="text-white flex items-center">
               <Bot className="h-5 w-5 mr-2 text-primary" />
               Chat with s0lara AI
             </CardTitle>
           </CardHeader>
-          <CardContent className="flex-1 flex flex-col p-0">
-            <ScrollArea className="flex-1 p-4">
+          <CardContent className="flex flex-col p-0">
+            <ScrollArea className="max-h-96 p-4">
               <div className="space-y-4">
                 {messages.length === 0 && (
                   <div className="text-center py-8">
                     <Bot className="h-12 w-12 text-primary/50 mx-auto mb-4" />
-                    <p className="text-white/70">
-                      Cool ai tool thingy
-                      for s0lara
-                      which runs on GROK
-                    </p>
+                    <p className="text-white/70">Cool ai tool thingy for s0lara which runs on GROK</p>
                   </div>
                 )}
 

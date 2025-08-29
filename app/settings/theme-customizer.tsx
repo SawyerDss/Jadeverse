@@ -7,8 +7,8 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { useTheme } from "@/lib/theme-context"
 import { Slider } from "@/components/ui/slider"
-import { Switch } from "@/components/ui/switch"
-import { Palette, Droplets, Box, Sliders, Save, Undo, Download, Upload } from "lucide-react"
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Palette, Box, Sliders, Save, Undo, Download, Upload, Type } from "lucide-react"
 
 type CustomColors = {
   primary: string
@@ -31,13 +31,24 @@ type CustomEffects = {
   enableGradients: boolean
 }
 
+type CustomFont = {
+  family: string
+  weight: string
+  size: string
+}
+
 interface ThemeCustomizerProps {
   currentTheme: string
-  onThemeChange: (theme: string, customColors?: CustomColors, customEffects?: CustomEffects) => void
+  onThemeChange: (
+    theme: string,
+    customColors?: CustomColors,
+    customEffects?: CustomEffects,
+    customFont?: CustomFont,
+  ) => void
 }
 
 export function ThemeCustomizer({ currentTheme, onThemeChange }: ThemeCustomizerProps) {
-  const { customColors: contextCustomColors } = useTheme()
+  const { customColors: contextCustomColors, customFont: contextCustomFont } = useTheme()
   const [selectedTab, setSelectedTab] = useState("preset")
   const [selectedCustomTab, setSelectedCustomTab] = useState("colors")
 
@@ -62,9 +73,30 @@ export function ThemeCustomizer({ currentTheme, onThemeChange }: ThemeCustomizer
     enableGradients: true,
   }
 
+  const defaultFont: CustomFont = {
+    family: "Inter", // Keep this for compatibility but don't show in UI
+    weight: contextCustomFont?.weight || "400",
+    size: contextCustomFont?.size || "16",
+  }
+
   const [colors, setColors] = useState<CustomColors>(defaultColors)
   const [effects, setEffects] = useState<CustomEffects>(defaultEffects)
-  const [savedThemes, setSavedThemes] = useState<{ name: string; colors: CustomColors; effects: CustomEffects }[]>([])
+  const [font, setFont] = useState<CustomFont>(defaultFont)
+  const [savedThemes, setSavedThemes] = useState<
+    { name: string; colors: CustomColors; effects: CustomEffects; font: CustomFont }[]
+  >([])
+
+  const fontWeights = [
+    { value: "100", label: "Thin" },
+    { value: "200", label: "Extra Light" },
+    { value: "300", label: "Light" },
+    { value: "400", label: "Normal" },
+    { value: "500", label: "Medium" },
+    { value: "600", label: "Semi Bold" },
+    { value: "700", label: "Bold" },
+    { value: "800", label: "Extra Bold" },
+    { value: "900", label: "Black" },
+  ]
 
   // Load saved themes from localStorage
   useEffect(() => {
@@ -91,12 +123,19 @@ export function ThemeCustomizer({ currentTheme, onThemeChange }: ThemeCustomizer
     }
   }, [contextCustomColors])
 
+  // Update font when contextCustomFont changes
+  useEffect(() => {
+    if (contextCustomFont) {
+      setFont(contextCustomFont)
+    }
+  }, [contextCustomFont])
+
   const handleColorChange = (key: keyof CustomColors, value: string) => {
     const newColors = { ...colors, [key]: value }
     setColors(newColors)
 
     if (currentTheme === "custom") {
-      onThemeChange("custom", newColors, effects)
+      onThemeChange("custom", newColors, effects, font)
     }
   }
 
@@ -105,13 +144,22 @@ export function ThemeCustomizer({ currentTheme, onThemeChange }: ThemeCustomizer
     setEffects(newEffects)
 
     if (currentTheme === "custom") {
-      onThemeChange("custom", colors, newEffects)
+      onThemeChange("custom", colors, newEffects, font)
+    }
+  }
+
+  const handleFontChange = (key: keyof CustomFont, value: string) => {
+    const newFont = { ...font, [key]: value }
+    setFont(newFont)
+
+    if (currentTheme === "custom") {
+      onThemeChange("custom", colors, effects, newFont)
     }
   }
 
   const handleThemeChange = (theme: string) => {
     if (theme === "custom") {
-      onThemeChange(theme, colors, effects)
+      onThemeChange(theme, colors, effects, font)
     } else {
       onThemeChange(theme)
     }
@@ -124,6 +172,7 @@ export function ThemeCustomizer({ currentTheme, onThemeChange }: ThemeCustomizer
         name: themeName,
         colors: { ...colors },
         effects: { ...effects },
+        font: { ...font },
       }
 
       const newSavedThemes = [...savedThemes, newTheme]
@@ -136,7 +185,8 @@ export function ThemeCustomizer({ currentTheme, onThemeChange }: ThemeCustomizer
     const theme = savedThemes[index]
     setColors(theme.colors)
     setEffects(theme.effects)
-    onThemeChange("custom", theme.colors, theme.effects)
+    setFont(theme.font || defaultFont)
+    onThemeChange("custom", theme.colors, theme.effects, theme.font || defaultFont)
   }
 
   const deleteSavedTheme = (index: number) => {
@@ -191,11 +241,12 @@ export function ThemeCustomizer({ currentTheme, onThemeChange }: ThemeCustomizer
   }
 
   const resetToDefaults = () => {
-    if (confirm("Reset to default colors and effects?")) {
+    if (confirm("Reset to default colors, effects, and font?")) {
       setColors(defaultColors)
       setEffects(defaultEffects)
+      setFont(defaultFont)
       if (currentTheme === "custom") {
-        onThemeChange("custom", defaultColors, defaultEffects)
+        onThemeChange("custom", defaultColors, defaultEffects, defaultFont)
       }
     }
   }
@@ -302,9 +353,9 @@ export function ThemeCustomizer({ currentTheme, onThemeChange }: ThemeCustomizer
                   <Palette className="h-4 w-4" />
                   <span>Colors</span>
                 </TabsTrigger>
-                <TabsTrigger value="effects" className="flex items-center gap-1">
-                  <Droplets className="h-4 w-4" />
-                  <span>Effects</span>
+                <TabsTrigger value="typography" className="flex items-center gap-1">
+                  <Type className="h-4 w-4" />
+                  <span>Font</span>
                 </TabsTrigger>
                 <TabsTrigger value="advanced" className="flex items-center gap-1">
                   <Sliders className="h-4 w-4" />
@@ -482,108 +533,54 @@ export function ThemeCustomizer({ currentTheme, onThemeChange }: ThemeCustomizer
                 </div>
               </TabsContent>
 
-              <TabsContent value="effects" className="space-y-4">
+              <TabsContent value="typography" className="space-y-4">
                 <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label>Bloom Intensity</Label>
-                    <span className="text-xs text-white/70">{Math.round(effects.bloomIntensity * 100)}%</span>
-                  </div>
-                  <Slider
-                    value={[effects.bloomIntensity * 100]}
-                    min={0}
-                    max={100}
-                    step={1}
-                    onValueChange={(value) => handleEffectChange("bloomIntensity", value[0] / 100)}
-                    className="w-full"
-                  />
+                  <Label>Font Weight</Label>
+                  <Select value={font.weight} onValueChange={(value) => handleFontChange("weight", value)}>
+                    <SelectTrigger className="bg-black/50 border-primary/30">
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {fontWeights.map((weight) => (
+                        <SelectItem key={weight.value} value={weight.value}>
+                          {weight.label}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div className="space-y-2">
                   <div className="flex justify-between">
-                    <Label>Animation Speed</Label>
-                    <span className="text-xs text-white/70">{effects.animationSpeed.toFixed(1)}x</span>
+                    <Label>Font Size</Label>
+                    <span className="text-xs text-white/70">{font.size}px</span>
                   </div>
                   <Slider
-                    value={[effects.animationSpeed * 50]}
-                    min={0}
-                    max={100}
+                    value={[Number.parseInt(font.size)]}
+                    min={12}
+                    max={24}
                     step={1}
-                    onValueChange={(value) => handleEffectChange("animationSpeed", value[0] / 50)}
+                    onValueChange={(value) => handleFontChange("size", value[0].toString())}
                     className="w-full"
                   />
                 </div>
 
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label>Border Radius</Label>
-                    <span className="text-xs text-white/70">{Math.round(effects.borderRadius * 20)}px</span>
-                  </div>
-                  <Slider
-                    value={[effects.borderRadius * 100]}
-                    min={0}
-                    max={100}
-                    step={1}
-                    onValueChange={(value) => handleEffectChange("borderRadius", value[0] / 100)}
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="space-y-2">
-                  <div className="flex justify-between">
-                    <Label>Glass Opacity</Label>
-                    <span className="text-xs text-white/70">{Math.round(effects.glassOpacity * 100)}%</span>
-                  </div>
-                  <Slider
-                    value={[effects.glassOpacity * 100]}
-                    min={0}
-                    max={100}
-                    step={1}
-                    onValueChange={(value) => handleEffectChange("glassOpacity", value[0] / 100)}
-                    className="w-full"
-                  />
-                </div>
-
-                <div className="grid grid-cols-2 gap-4 mt-4">
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="enable-glow"
-                      checked={effects.enableGlow}
-                      onCheckedChange={(checked) => handleEffectChange("enableGlow", checked)}
-                    />
-                    <Label htmlFor="enable-glow">Enable Glow</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="enable-animations"
-                      checked={effects.enableAnimations}
-                      onCheckedChange={(checked) => handleEffectChange("enableAnimations", checked)}
-                    />
-                    <Label htmlFor="enable-animations">Enable Animations</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="enable-blur"
-                      checked={effects.enableBlur}
-                      onCheckedChange={(checked) => handleEffectChange("enableBlur", checked)}
-                    />
-                    <Label htmlFor="enable-blur">Enable Blur</Label>
-                  </div>
-
-                  <div className="flex items-center space-x-2">
-                    <Switch
-                      id="enable-gradients"
-                      checked={effects.enableGradients}
-                      onCheckedChange={(checked) => handleEffectChange("enableGradients", checked)}
-                    />
-                    <Label htmlFor="enable-gradients">Enable Gradients</Label>
-                  </div>
+                <div className="mt-4 p-3 bg-black/30 rounded-md border border-primary/20">
+                  <h3 className="text-sm font-medium mb-2">Font Preview</h3>
+                  <p
+                    style={{
+                      fontWeight: font.weight,
+                      fontSize: `${font.size}px`,
+                    }}
+                    className="text-white"
+                  >
+                    The quick brown fox jumps over the lazy dog. 1234567890
+                  </p>
                 </div>
               </TabsContent>
 
               <TabsContent value="advanced" className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-2 gap-4 mt-4">
                   <button
                     className="flex items-center justify-center gap-2 py-2 px-4 bg-primary/20 hover:bg-primary/30 text-primary border border-primary/30 rounded-md transition-colors"
                     onClick={saveCurrentTheme}
@@ -662,6 +659,11 @@ export function ThemeCustomizer({ currentTheme, onThemeChange }: ThemeCustomizer
                         <div className="w-4 h-4 rounded-full" style={{ backgroundColor: theme.colors.accent }}></div>
                       </div>
                       <span className="font-medium">{theme.name}</span>
+                      {theme.font && (
+                        <span className="text-xs text-white/60" style={{ fontFamily: theme.font.family }}>
+                          {theme.font.family}
+                        </span>
+                      )}
                     </div>
                     <div className="flex gap-2">
                       <button

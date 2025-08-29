@@ -27,11 +27,18 @@ type CustomEffects = {
   enableGradients?: boolean
 }
 
+type CustomFont = {
+  family?: string
+  weight: string
+  size: string
+}
+
 type ThemeContextType = {
   theme: Theme
-  setTheme: (theme: Theme, customColors?: CustomColors, customEffects?: CustomEffects) => void
+  setTheme: (theme: Theme, customColors?: CustomColors, customEffects?: CustomEffects, customFont?: CustomFont) => void
   customColors: CustomColors | null
   customEffects: CustomEffects | null
+  customFont: CustomFont | null
 }
 
 const defaultCustomColors: CustomColors = {
@@ -55,18 +62,26 @@ const defaultCustomEffects: CustomEffects = {
   enableGradients: true,
 }
 
+const defaultCustomFont: CustomFont = {
+  family: "Inter",
+  weight: "400",
+  size: "16",
+}
+
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined)
 
 export function ThemeProvider({ children }: { children: React.ReactNode }) {
   const [theme, setThemeState] = useState<Theme>("jade")
   const [customColors, setCustomColors] = useState<CustomColors | null>(null)
   const [customEffects, setCustomEffects] = useState<CustomEffects | null>(null)
+  const [customFont, setCustomFont] = useState<CustomFont | null>(null)
 
   // Load theme from localStorage on initial load
   useEffect(() => {
     const storedTheme = localStorage.getItem("theme") as Theme
     const storedCustomColors = localStorage.getItem("custom-colors")
     const storedCustomEffects = localStorage.getItem("custom-effects")
+    const storedCustomFont = localStorage.getItem("custom-font")
 
     if (storedTheme) {
       setThemeState(storedTheme)
@@ -96,6 +111,19 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
         }
       } catch (e) {
         console.error("Failed to parse custom effects:", e)
+      }
+    }
+
+    if (storedCustomFont) {
+      try {
+        const parsedFont = JSON.parse(storedCustomFont)
+        setCustomFont(parsedFont)
+
+        if (storedTheme === "custom") {
+          applyCustomFont(parsedFont)
+        }
+      } catch (e) {
+        console.error("Failed to parse custom font:", e)
       }
     }
   }, [])
@@ -165,8 +193,29 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     }
   }
 
+  // Apply custom font to CSS variables
+  const applyCustomFont = (font: CustomFont) => {
+    const root = document.documentElement
+
+    // Always use Inter as the font family
+    root.style.setProperty("--font-family", "Inter")
+
+    if (font.weight) {
+      root.style.setProperty("--font-weight", font.weight)
+    }
+
+    if (font.size) {
+      root.style.setProperty("--font-size", `${font.size}px`)
+    }
+  }
+
   // Set theme and save to localStorage
-  const setTheme = (newTheme: Theme, newCustomColors?: CustomColors, newCustomEffects?: CustomEffects) => {
+  const setTheme = (
+    newTheme: Theme,
+    newCustomColors?: CustomColors,
+    newCustomEffects?: CustomEffects,
+    newCustomFont?: CustomFont,
+  ) => {
     setThemeState(newTheme)
     localStorage.setItem("theme", newTheme)
     document.documentElement.setAttribute("data-theme", newTheme)
@@ -190,11 +239,16 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       root.style.removeProperty("--border-radius")
       root.style.removeProperty("--glass-opacity")
 
+      // Reset font properties
+      root.style.removeProperty("--font-family")
+      root.style.removeProperty("--font-weight")
+      root.style.removeProperty("--font-size")
+
       // Reset effect classes
       root.classList.remove("disable-glow", "disable-animations", "disable-blur", "disable-gradients")
     }
 
-    // Handle custom theme colors and effects
+    // Handle custom theme colors, effects, and font
     if (newTheme === "custom") {
       const colors = newCustomColors || customColors || defaultCustomColors
       setCustomColors(colors)
@@ -205,11 +259,18 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
       setCustomEffects(effects)
       localStorage.setItem("custom-effects", JSON.stringify(effects))
       applyCustomEffects(effects)
+
+      const font = newCustomFont || customFont || defaultCustomFont
+      setCustomFont(font)
+      localStorage.setItem("custom-font", JSON.stringify(font))
+      applyCustomFont(font)
     }
   }
 
   return (
-    <ThemeContext.Provider value={{ theme, setTheme, customColors, customEffects }}>{children}</ThemeContext.Provider>
+    <ThemeContext.Provider value={{ theme, setTheme, customColors, customEffects, customFont }}>
+      {children}
+    </ThemeContext.Provider>
   )
 }
 
