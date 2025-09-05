@@ -163,18 +163,25 @@ export default function GamesPage() {
               <Link href={`/games/${game.id}`} className="block">
                 <div className="relative w-full h-48 overflow-hidden">
                   <Image
-                    src={game.image || "/placeholder.svg"}
+                    src={game.image || "/placeholder.svg?height=192&width=256&text=Game"}
                     alt={game.title}
                     fill
                     className="object-cover transition-transform duration-300 group-hover:scale-105"
                     sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
-                    priority={index === 0} // Prioritize loading for the first image
-                    loading={index === 0 ? "eager" : "eager"} // Ensure all images are eager loaded
+                    priority={index < 10}
+                    onError={(e) => {
+                      const target = e.target as HTMLImageElement
+                      target.src = "/placeholder.svg?height=192&width=256&text=Game"
+                    }}
                   />
+                  {game.icon && (
+                    <div className="absolute top-2 left-2 w-8 h-8 bg-black/70 rounded-full flex items-center justify-center text-lg">
+                      {game.icon}
+                    </div>
+                  )}
                 </div>
                 <CardContent className="p-4">
                   <CardTitle className="text-white text-lg font-semibold truncate mb-2">{game.title}</CardTitle>
-                  {/* Removed game description as requested */}
                   <div className="flex items-center justify-between mt-3 text-white/80 text-xs">
                     <span className="bg-primary/20 text-primary px-2 py-1 rounded-full">{game.category}</span>
                     {game.isDev && <span className="bg-purple-500/20 text-purple-400 px-2 py-1 rounded-full">Dev</span>}

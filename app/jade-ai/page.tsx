@@ -4,186 +4,142 @@ import type React from "react"
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { ScrollArea } from "@/components/ui/scroll-area"
-import { Send, Bot, User, AlertCircle } from "lucide-react"
-import { useSound } from "@/lib/sound-context"
-
-interface Message {
-  id: string
-  role: "user" | "assistant"
-  content: string
-  timestamp: Date
-}
+import { Send, Bot, User, AlertTriangle } from "lucide-react"
 
 export default function JadeAIPage() {
-  const [messages, setMessages] = useState<Message[]>([])
+  const [messages, setMessages] = useState<Array<{ role: "user" | "assistant"; content: string }>>([])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
-  const { playSound } = useSound()
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    if (!input.trim() || isLoading) return
+    if (!input.trim()) return
 
-    const userMessage: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content: input.trim(),
-      timestamp: new Date(),
-    }
-
+    const userMessage = { role: "user" as const, content: input }
     setMessages((prev) => [...prev, userMessage])
     setInput("")
     setIsLoading(true)
-    playSound("click")
 
     try {
-      const response = await fetch("/api/chat", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          messages: [...messages, userMessage].map((msg) => ({
-            role: msg.role,
-            content: msg.content,
-          })),
-        }),
-      })
-
-      if (!response.ok) {
-        const errorData = await response.json()
-        throw new Error(errorData.message || "Failed to get response")
-      }
-
-      const assistantMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "s0lara AI is currently undergoing maintenance due to dependency updates. Please try again later.",
-        timestamp: new Date(),
-      }
-
-      setMessages((prev) => [...prev, assistantMessage])
-      playSound("success")
+      // Show maintenance message
+      setTimeout(() => {
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "I apologize, but the AI service is currently under maintenance. Please try again later.",
+          },
+        ])
+        setIsLoading(false)
+      }, 1000)
     } catch (error) {
-      console.error("Chat error:", error)
-      const errorMessage: Message = {
-        id: (Date.now() + 1).toString(),
-        role: "assistant",
-        content: "Sorry, I'm currently experiencing technical difficulties. Please try again later.",
-        timestamp: new Date(),
-      }
-      setMessages((prev) => [...prev, errorMessage])
-      playSound("error")
-    } finally {
+      console.error("Error:", error)
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "assistant",
+          content: "Sorry, I encountered an error. Please try again later.",
+        },
+      ])
       setIsLoading(false)
     }
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 via-blue-900 to-indigo-900 p-4">
-      <div className="max-w-4xl mx-auto">
-        <Card className="bg-black/40 border-cyan-500/30 backdrop-blur-sm">
-          <CardHeader className="border-b border-cyan-500/30">
-            <CardTitle className="text-2xl font-bold text-cyan-400 flex items-center gap-2">
-              <Bot className="w-8 h-8" />
-              s0lara AI
-              <AlertCircle className="w-5 h-5 text-yellow-500 ml-2" />
-            </CardTitle>
-            <p className="text-cyan-300/70">AI Assistant temporarily under maintenance</p>
-          </CardHeader>
-          <CardContent className="p-0">
-            <div className="flex flex-col h-[600px]">
-              <ScrollArea className="flex-1 p-4">
-                <div className="space-y-4">
-                  {messages.length === 0 && (
-                    <div className="text-center text-cyan-300/50 py-8">
-                      <Bot className="w-16 h-16 mx-auto mb-4 opacity-50" />
-                      <p>s0lara AI is currently under maintenance.</p>
-                      <p className="text-sm mt-2">We're working to restore full functionality soon.</p>
-                    </div>
-                  )}
-                  {messages.map((message) => (
-                    <div
-                      key={message.id}
-                      className={`flex gap-3 ${message.role === "user" ? "justify-end" : "justify-start"}`}
-                    >
-                      <div
-                        className={`flex gap-3 max-w-[80%] ${
-                          message.role === "user" ? "flex-row-reverse" : "flex-row"
-                        }`}
-                      >
-                        <div
-                          className={`w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${
-                            message.role === "user" ? "bg-cyan-500" : "bg-purple-500"
-                          }`}
-                        >
-                          {message.role === "user" ? (
-                            <User className="w-4 h-4 text-white" />
-                          ) : (
-                            <Bot className="w-4 h-4 text-white" />
-                          )}
-                        </div>
-                        <div
-                          className={`rounded-lg p-3 ${
-                            message.role === "user"
-                              ? "bg-cyan-500/20 text-cyan-100"
-                              : "bg-purple-500/20 text-purple-100"
-                          }`}
-                        >
-                          <p className="whitespace-pre-wrap">{message.content}</p>
-                          <p className="text-xs opacity-50 mt-1">{message.timestamp.toLocaleTimeString()}</p>
-                        </div>
-                      </div>
-                    </div>
-                  ))}
-                  {isLoading && (
-                    <div className="flex gap-3 justify-start">
-                      <div className="w-8 h-8 rounded-full bg-purple-500 flex items-center justify-center flex-shrink-0">
-                        <Bot className="w-4 h-4 text-white" />
-                      </div>
-                      <div className="bg-purple-500/20 text-purple-100 rounded-lg p-3">
-                        <div className="flex items-center gap-2">
-                          <div className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"></div>
-                          <div
-                            className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
-                            style={{ animationDelay: "0.1s" }}
-                          ></div>
-                          <div
-                            className="w-2 h-2 bg-purple-400 rounded-full animate-bounce"
-                            style={{ animationDelay: "0.2s" }}
-                          ></div>
-                          <span className="text-sm ml-2">s0lara AI is thinking...</span>
-                        </div>
-                      </div>
-                    </div>
-                  )}
+    <div className="container mx-auto p-4 max-w-4xl">
+      <Card className="h-[80vh] flex flex-col bg-black/40 border-primary/20">
+        <CardHeader className="border-b border-primary/20">
+          <CardTitle className="flex items-center gap-2 text-primary">
+            <Bot className="h-6 w-6" />
+            s0lara AI
+            <AlertTriangle className="h-5 w-5 text-yellow-500 ml-2" />
+            <span className="text-sm text-yellow-500">Under Maintenance</span>
+          </CardTitle>
+        </CardHeader>
+
+        <CardContent className="flex-1 flex flex-col p-0">
+          <ScrollArea className="flex-1 p-4">
+            <div className="space-y-4">
+              <div className="flex items-start gap-3">
+                <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                  <Bot className="h-4 w-4 text-primary" />
                 </div>
-              </ScrollArea>
-              <div className="border-t border-cyan-500/30 p-4">
-                <form onSubmit={handleSubmit} className="flex gap-2">
-                  <Input
-                    value={input}
-                    onChange={(e) => setInput(e.target.value)}
-                    placeholder="Ask s0lara AI anything... (Currently under maintenance)"
-                    className="flex-1 bg-black/50 border-cyan-500/30 text-cyan-100 placeholder-cyan-300/50"
-                    disabled={isLoading}
-                  />
-                  <Button
-                    type="submit"
-                    disabled={isLoading || !input.trim()}
-                    className="bg-cyan-500 hover:bg-cyan-600 text-black"
-                  >
-                    <Send className="w-4 h-4" />
-                  </Button>
-                </form>
+                <div className="bg-primary/10 rounded-lg p-3 max-w-[80%]">
+                  <p className="text-white">
+                    Hello! I'm s0lara AI, your gaming assistant. I'm currently undergoing maintenance to improve my
+                    capabilities. Please check back later!
+                  </p>
+                </div>
               </div>
+
+              {messages.map((message, index) => (
+                <div
+                  key={index}
+                  className={`flex items-start gap-3 ${message.role === "user" ? "flex-row-reverse" : ""}`}
+                >
+                  <div
+                    className={`w-8 h-8 rounded-full flex items-center justify-center ${
+                      message.role === "user" ? "bg-secondary/20" : "bg-primary/20"
+                    }`}
+                  >
+                    {message.role === "user" ? (
+                      <User className="h-4 w-4 text-secondary" />
+                    ) : (
+                      <Bot className="h-4 w-4 text-primary" />
+                    )}
+                  </div>
+                  <div
+                    className={`rounded-lg p-3 max-w-[80%] ${
+                      message.role === "user" ? "bg-secondary/10 text-white" : "bg-primary/10 text-white"
+                    }`}
+                  >
+                    <p>{message.content}</p>
+                  </div>
+                </div>
+              ))}
+
+              {isLoading && (
+                <div className="flex items-start gap-3">
+                  <div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
+                    <Bot className="h-4 w-4 text-primary" />
+                  </div>
+                  <div className="bg-primary/10 rounded-lg p-3">
+                    <div className="flex space-x-1">
+                      <div className="w-2 h-2 bg-primary rounded-full animate-bounce"></div>
+                      <div
+                        className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                        style={{ animationDelay: "0.1s" }}
+                      ></div>
+                      <div
+                        className="w-2 h-2 bg-primary rounded-full animate-bounce"
+                        style={{ animationDelay: "0.2s" }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
-          </CardContent>
-        </Card>
-      </div>
+          </ScrollArea>
+
+          <div className="border-t border-primary/20 p-4">
+            <form onSubmit={handleSubmit} className="flex gap-2">
+              <Input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Ask me about games, tips, or anything gaming related..."
+                className="flex-1 bg-white/5 border-primary/30 text-white placeholder-white/50"
+                disabled={isLoading}
+              />
+              <Button type="submit" disabled={isLoading || !input.trim()} className="bg-primary hover:bg-primary/80">
+                <Send className="h-4 w-4" />
+              </Button>
+            </form>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   )
 }
