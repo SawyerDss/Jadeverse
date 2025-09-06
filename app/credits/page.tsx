@@ -8,8 +8,14 @@ import { useState } from "react"
 
 export default function CreditsPage() {
   const [showMessage, setShowMessage] = useState(false)
+  const [currentMessage, setCurrentMessage] = useState("")
 
   const handleCapybaraClick = () => {
+    // 50% chance for each message
+    const messages = ["hi nolan", "hi carson"]
+    const randomMessage = messages[Math.floor(Math.random() * messages.length)]
+
+    setCurrentMessage(randomMessage)
     setShowMessage(true)
     setTimeout(() => setShowMessage(false), 2000) // Hide message after 2 seconds
   }
@@ -123,7 +129,7 @@ export default function CreditsPage() {
           {/* Message bubble */}
           {showMessage && (
             <div className="absolute bottom-full right-0 mb-2 bg-primary text-white px-3 py-2 rounded-lg shadow-lg animate-bounce">
-              <div className="text-sm font-medium">hi nolan</div>
+              <div className="text-sm font-medium">{currentMessage}</div>
               <div className="absolute top-full right-4 w-0 h-0 border-l-4 border-r-4 border-t-4 border-transparent border-t-primary"></div>
             </div>
           )}

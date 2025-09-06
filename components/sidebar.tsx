@@ -20,6 +20,7 @@ import {
   Home,
   User,
   Coffee,
+  Volume2,
 } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { Button } from "@/components/ui/button"
@@ -107,6 +108,7 @@ export default function Sidebar() {
       { href: "/games", icon: Gamepad2, label: "Games" },
       { href: "/apps", icon: AppWindow, label: "Proxees/Game Sites" },
       { href: "/downloads", icon: Download, label: "Downloads" },
+      { href: "/soundboard", icon: Volume2, label: "Soundboard" },
       ...(isFeatureEnabled("showExploits") ? [{ href: "/exploits", icon: Code, label: "Exploits" }] : []),
     ],
     social: [
