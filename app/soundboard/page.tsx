@@ -80,7 +80,7 @@ export default function SoundboardPage() {
 
   useEffect(() => {
     // Default URL - hardcoded
-    const defaultUrl = "https://www.myinstants.com/"
+    const defaultUrl = "https://selenite.global.ssl.fastly.net/semag/soundboard/index.html"
     setIframeUrl(defaultUrl)
   }, [])
 
